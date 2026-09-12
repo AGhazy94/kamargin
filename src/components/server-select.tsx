@@ -10,15 +10,21 @@ import { useServer } from '@/stores/server'
 
 const ITEMS = SERVERS.map(({ id, name }) => ({ value: id, label: name }))
 
-export function ServerSelect() {
+export function ServerSelect({
+  value,
+  onValueChange,
+}: {
+  value?: number
+  onValueChange?: (serverId: number) => void
+} = {}) {
   const { serverId, selectServer } = useServer()
 
   return (
     <Select
       items={ITEMS}
-      value={serverId}
+      value={value ?? serverId}
       onValueChange={(value: number | null) => {
-        if (value !== null) selectServer(value)
+        if (value !== null) (onValueChange ?? selectServer)(value)
       }}
     >
       <SelectTrigger aria-label="Server" className="min-w-28 sm:min-w-36">

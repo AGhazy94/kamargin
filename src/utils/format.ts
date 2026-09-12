@@ -1,14 +1,13 @@
 import type { PackTier } from '@/types/game'
 
 const GROUPED = new Intl.NumberFormat('en-US')
-const GROUP_SEPARATOR = ' '
 
 const MINUTE_MS = 60_000
 const HOUR_MS = 60 * MINUTE_MS
 const DAY_MS = 24 * HOUR_MS
 
 export function formatKamas(value: number): string {
-  return GROUPED.format(Math.round(value)).replaceAll(',', GROUP_SEPARATOR)
+  return GROUPED.format(Math.round(value))
 }
 
 export function formatTier(tier: PackTier): string {

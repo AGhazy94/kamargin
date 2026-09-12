@@ -1,42 +1,53 @@
-import { useCallback, useState } from 'react'
-
-import { AppShell } from '@/components/layouts/app-shell'
+import { Button } from '@/components/ui/button'
 import { CraftProfitCalculator } from '@/features/craft-profit/craft-profit-calculator'
 import { SavedPanel } from '@/features/saved-items/saved-panel'
 import { getItem } from '@/lib/game-data'
+import { restorePackPrices } from '@/stores/price-book'
 import { useSnapshots } from '@/stores/saved-items'
-import { useServer } from '@/stores/server'
 import type { Item } from '@/types/game'
-import type { Snapshot } from '@/types/saved'
 
-export function HomeRoute() {
-  const { serverId } = useServer()
+export function HomeRoute({
+  serverId,
+  itemId,
+  onItemChange,
+}: {
+  serverId: number
+  itemId: number | null
+  onItemChange: (item: Item | null) => void
+}) {
   const { addSnapshot } = useSnapshots(serverId)
-  const [item, setItem] = useState<Item | null>(null)
-  const [restoring, setRestoring] = useState<Snapshot | null>(null)
+  const item = itemId === null ? null : (getItem(itemId) ?? null)
+  const historyParams = new URLSearchParams({ server: String(serverId) })
+  if (item) historyParams.set('item', String(item.id))
 
-  // The two features never meet: the route holds the selected item between them.
-  const restore = useCallback((snapshot: Snapshot) => {
-    setItem(getItem(snapshot.itemId) ?? null)
-    setRestoring(snapshot)
-  }, [])
+  if (itemId !== null && !item)
+    return (
+      <div className="flex flex-col items-start gap-4">
+        <h1 className="font-heading font-semibold text-xl">Item unavailable</h1>
+        <Button variant="outline" onClick={() => onItemChange(null)}>
+          Choose another item
+        </Button>
+      </div>
+    )
 
   return (
-    <AppShell>
-      <CraftProfitCalculator
-        item={item}
-        onItemChange={setItem}
-        restoring={restoring}
-        onRestored={useCallback(() => setRestoring(null), [])}
-        onTakeSnapshot={addSnapshot}
-        savedPanel={
-          <SavedPanel
-            serverId={serverId}
-            onSelectItem={setItem}
-            onRestore={restore}
-          />
-        }
-      />
-    </AppShell>
+    <CraftProfitCalculator
+      serverId={serverId}
+      item={item}
+      onItemChange={onItemChange}
+      onTakeSnapshot={addSnapshot}
+      savedPanel={
+        <SavedPanel
+          key={`${serverId}:${item?.id ?? 'none'}`}
+          serverId={serverId}
+          itemId={item?.id ?? null}
+          historyHref={`/snapshots?${historyParams}`}
+          onSelectItem={onItemChange}
+          onRestore={(snapshot) =>
+            restorePackPrices(serverId, snapshot.prices, snapshot.takenAt)
+          }
+        />
+      }
+    />
   )
 }

@@ -24,8 +24,7 @@ export function RecipeTable({
   book: PriceBook
   onPriceChange: (itemId: number, tier: PackTier, packPrice?: number) => void
 }) {
-  // One row open at a time: two sub-rows push the craft cost off-screen.
-  const [openItemId, setOpenItemId] = useState<number | null>(null)
+  const [openItemIds, setOpenItemIds] = useState<Set<number>>(() => new Set())
 
   return (
     // Sticky head resolves against the panel, not a scroll container of the table's own.
@@ -34,9 +33,8 @@ export function RecipeTable({
         <TableRow>
           <TableHead>Ingredient</TableHead>
           <TableHead className="hidden text-right sm:table-cell">Qty</TableHead>
-          <TableHead className="w-32 text-right sm:w-44">
-            Unit price{' '}
-            <span className="font-normal text-muted-foreground">per pack</span>
+          <TableHead className="w-40 min-w-40 text-right sm:w-44 sm:min-w-44">
+            Pack price
           </TableHead>
           <TableHead className="hidden text-right sm:table-cell">
             Cost
@@ -50,11 +48,14 @@ export function RecipeTable({
             line={line}
             packPrices={prices[line.itemId] ?? {}}
             entry={book[line.itemId]}
-            expanded={openItemId === line.itemId}
+            expanded={openItemIds.has(line.itemId)}
             onToggle={() =>
-              setOpenItemId((current) =>
-                current === line.itemId ? null : line.itemId,
-              )
+              setOpenItemIds((current) => {
+                const next = new Set(current)
+                if (next.has(line.itemId)) next.delete(line.itemId)
+                else next.add(line.itemId)
+                return next
+              })
             }
             onPriceChange={(tier, packPrice) =>
               onPriceChange(line.itemId, tier, packPrice)

@@ -12,16 +12,14 @@ export const MARKETPLACE_FEE_RATE = 0.02
 // Community consensus, not a game rule: below this the unsold risk dominates.
 export const THIN_MARGIN_THRESHOLD = 0.1
 
-function emptyTiers(): TierProfit[] {
-  return PACK_TIERS.map((tier) => ({ tier }))
-}
-
 function tierProfit(
   tier: PackTier,
-  craftCost: number,
+  craftCost: number | undefined,
   packPrice: number | undefined,
 ): TierProfit {
   if (packPrice === undefined) return { tier }
+  // A sale price is worth keeping on its own: the market is priced before the workshop.
+  if (craftCost === undefined) return { tier, packPrice }
 
   const packCost = craftCost * tier
   // 2% of the pack total at every tier, so no tier is fee-advantaged.
@@ -66,14 +64,11 @@ export function calculateCraftProfit({
     (line) => line.lineCost === undefined,
   ).length
 
-  if (missingPriceCount > 0 || lines.length === 0) {
-    return { lines, missingPriceCount, tiers: emptyTiers() }
-  }
+  const craftCost =
+    missingPriceCount > 0 || lines.length === 0
+      ? undefined
+      : lines.reduce((total, line) => total + (line.lineCost ?? 0), 0)
 
-  const craftCost = lines.reduce(
-    (total, line) => total + (line.lineCost ?? 0),
-    0,
-  )
   const tiers = PACK_TIERS.map((tier) =>
     tierProfit(tier, craftCost, salePrices[tier]),
   )
@@ -82,7 +77,10 @@ export function calculateCraftProfit({
     lines,
     missingPriceCount,
     craftCost,
-    breakEven: craftCost / (1 - MARKETPLACE_FEE_RATE),
+    breakEven:
+      craftCost === undefined
+        ? undefined
+        : craftCost / (1 - MARKETPLACE_FEE_RATE),
     tiers,
     bestTier: bestTierOf(tiers),
   }

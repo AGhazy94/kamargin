@@ -2,12 +2,10 @@ import { describe, expect, it } from 'vitest'
 
 import { formatAge, formatKamas, formatMargin } from '../format'
 
-const NBSP = ' '
-
 describe('formatKamas', () => {
-  it('groups thousands with a non-breaking space', () => {
-    expect(formatKamas(11650)).toBe(`11${NBSP}650`)
-    expect(formatKamas(1234567)).toBe(`1${NBSP}234${NBSP}567`)
+  it('groups thousands with a comma', () => {
+    expect(formatKamas(11650)).toBe('11,650')
+    expect(formatKamas(1234567)).toBe('1,234,567')
   })
 
   it('keeps small and negative figures intact', () => {
@@ -16,7 +14,7 @@ describe('formatKamas', () => {
   })
 
   it('rounds — kamas are whole', () => {
-    expect(formatKamas(10734.69)).toBe(`10${NBSP}735`)
+    expect(formatKamas(10734.69)).toBe('10,735')
   })
 })
 

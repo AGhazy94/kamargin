@@ -1,92 +1,91 @@
 import { ChevronDownIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useId, useState } from 'react'
+import { Link } from 'react-router'
 
-import { ScrollPanel } from '@/components/scroll-panel'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import { useSnapshots, useWatchlist } from '@/stores/saved-items'
+import { useSnapshots } from '@/stores/saved-items'
 import type { Item } from '@/types/game'
 import type { Snapshot } from '@/types/saved'
 import { SnapshotList } from './components/snapshot-list'
 import { SnapshotView } from './components/snapshot-view'
-import { Watchlist } from './components/watchlist'
-
-function Section({
-  title,
-  children,
-}: {
-  title: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-        {title}
-      </p>
-      {children}
-    </div>
-  )
-}
 
 export function SavedPanel({
   serverId,
+  itemId,
+  historyHref,
   onSelectItem,
   onRestore,
 }: {
   serverId: number
+  itemId: number | null
+  historyHref: string
   onSelectItem: (item: Item) => void
   onRestore: (snapshot: Snapshot) => void
 }) {
-  const { entries, unwatch } = useWatchlist(serverId)
   const { snapshots, removeSnapshot } = useSnapshots(serverId)
-  const [open, setOpen] = useState(true)
-  const [viewing, setViewing] = useState<Snapshot | null>(null)
+  const [expanded, setExpanded] = useState(false)
+  const [viewingId, setViewingId] = useState<string | null>(null)
+  const listId = useId()
+  const matching = snapshots
+    .filter((snapshot) => snapshot.itemId === itemId)
+    .sort((first, second) => second.takenAt - first.takenAt)
+  const viewing = matching.find((snapshot) => snapshot.id === viewingId) ?? null
 
-  const header = (
-    <div className="flex items-center justify-between gap-2">
-      <span className="font-heading font-medium">Saved</span>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        aria-expanded={open}
-        aria-label={open ? 'Collapse saved items' : 'Expand saved items'}
-        onClick={() => setOpen((current) => !current)}
-      >
-        <ChevronDownIcon
-          className={cn('size-4 transition-transform', !open && '-rotate-90')}
-        />
-      </Button>
-    </div>
-  )
+  if (itemId === null || matching.length === 0) return null
 
   return (
     <>
-      <ScrollPanel
-        header={header}
-        // Sized to its content, never past a third of the column: the sell panel is the answer.
-        className={cn('shrink-0', open && 'lg:max-h-[45%]')}
+      <section
+        aria-label="Snapshot history"
+        className="flex shrink-0 flex-col gap-2 border-t pt-3"
       >
-        {open && (
-          <div className="flex flex-col gap-5">
-            <Section title="Watchlist">
-              <Watchlist
-                entries={entries}
-                onSelect={onSelectItem}
-                onRemove={unwatch}
-              />
-            </Section>
-            <Separator />
-            <Section title="Snapshots">
-              <SnapshotList snapshots={snapshots} onOpen={setViewing} />
-            </Section>
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="font-heading font-medium text-sm">
+            Snapshot history ({matching.length})
+          </h2>
+          <div className="flex items-center gap-2">
+            <Link
+              to={historyHref}
+              className="rounded-sm text-primary text-xs underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              View all
+            </Link>
+            {matching.length > 1 && (
+              <Button
+                variant="ghost"
+                size="icon-lg"
+                aria-expanded={expanded}
+                aria-controls={listId}
+                aria-label={
+                  expanded ? 'Show latest snapshot' : 'Show recent snapshots'
+                }
+                onClick={() => setExpanded((current) => !current)}
+              >
+                <ChevronDownIcon
+                  className={cn(
+                    'size-4 transition-transform',
+                    expanded && 'rotate-180',
+                  )}
+                />
+              </Button>
+            )}
           </div>
-        )}
-      </ScrollPanel>
+        </div>
+        <div id={listId} className="max-h-40 overflow-y-auto">
+          <SnapshotList
+            compact
+            snapshots={matching.slice(0, expanded ? 3 : 1)}
+            onOpen={(snapshot) => setViewingId(snapshot.id)}
+          />
+        </div>
+      </section>
 
       <SnapshotView
         snapshot={viewing}
-        onClose={() => setViewing(null)}
+        serverId={serverId}
+        onClose={() => setViewingId(null)}
+        onOpenItem={onSelectItem}
         onRestore={onRestore}
         onDelete={removeSnapshot}
       />

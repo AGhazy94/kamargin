@@ -166,6 +166,27 @@ export function removeTierPrice(
   writeStored(key(serverId), next)
 }
 
+export function restorePackPrices(
+  serverId: number,
+  prices: Record<number, PackPrices>,
+  capturedAt = Date.now(),
+) {
+  const book = { ...readPriceBook(serverId) }
+
+  for (const [id, packPrices] of Object.entries(prices)) {
+    const itemId = Number(id)
+    const tiers: PriceEntry['tiers'] = {}
+    for (const tier of PACK_TIERS) {
+      const packPrice = packPrices[tier]
+      if (packPrice !== undefined) tiers[tier] = { packPrice, capturedAt }
+    }
+    if (Object.keys(tiers).length === 0) delete book[itemId]
+    else book[itemId] = { serverId, itemId, tiers }
+  }
+
+  writeStored(key(serverId), book)
+}
+
 export function usePriceBook(serverId: number) {
   const [book] = useLocalStorage(key(serverId), EMPTY_BOOK)
 

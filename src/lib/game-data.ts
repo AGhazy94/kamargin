@@ -29,22 +29,35 @@ const itemsById = new Map<number, Item>(
   (itemsData as RawItem[]).map((raw) => [raw.id, toItem(raw)]),
 )
 
+const itemTypes = [
+  ...new Set([...itemsById.values()].map((item) => item.type)),
+].sort((a, b) => a.localeCompare(b))
+
 export const GAME_DATA_VERSION = meta.gameVersion
 
 export function getItem(ankamaId: number): Item | undefined {
   return itemsById.get(ankamaId)
 }
 
-export function searchItems(query: string): Item[] {
+export function getItemTypes(): string[] {
+  return itemTypes
+}
+
+export function searchItems(query: string, type?: string): Item[] {
   const needle = query.trim().toLowerCase()
-  if (!needle) return []
+  if (!needle && !type) return []
 
   const startsWith: Item[] = []
   const contains: Item[] = []
   for (const item of itemsById.values()) {
-    const name = item.name.toLowerCase()
-    if (name.startsWith(needle)) startsWith.push(item)
-    else if (name.includes(needle)) contains.push(item)
+    if (type && item.type !== type) continue
+    if (!needle) {
+      startsWith.push(item)
+    } else {
+      const name = item.name.toLowerCase()
+      if (name.startsWith(needle)) startsWith.push(item)
+      else if (name.includes(needle)) contains.push(item)
+    }
     if (startsWith.length >= SEARCH_RESULT_LIMIT) break
   }
 

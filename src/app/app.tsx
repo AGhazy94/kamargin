@@ -1,10 +1,14 @@
+import { HashRouter } from 'react-router'
+
 import { AppProvider } from '@/app/provider'
-import { HomeRoute } from '@/app/routes/home'
+import { AppRouter } from '@/app/router'
 
 export function App() {
   return (
     <AppProvider>
-      <HomeRoute />
+      <HashRouter>
+        <AppRouter />
+      </HashRouter>
     </AppProvider>
   )
 }

@@ -61,6 +61,7 @@ src/
 ├── app/          # application layer
 │   ├── routes/   # route components
 │   ├── app.tsx   # root component
+│   ├── router.tsx # client-side routes and navigation
 │   └── provider.tsx  # global providers
 ├── assets/       # static files (images, fonts)
 ├── components/   # shared components
@@ -76,8 +77,8 @@ src/
 └── utils/        # shared utilities
 ```
 
-No `app/router.tsx` and no `features/*/api/`: this is a single-screen offline app with no router
-and no runtime fetching. Add them if that changes.
+`app/router.tsx` composes Calculator, Watchlist and Snapshots with client-side hash routing.
+There is no `features/*/api/`: prices and recipes still require no runtime fetching.
 
 ### Unidirectional imports (enforced)
 

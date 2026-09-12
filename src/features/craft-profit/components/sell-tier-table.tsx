@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import type { PackTier } from '@/types/game'
-import { formatCompactKamas, formatTier } from '@/utils/format'
+import { formatCompactKamas, formatKamas, formatTier } from '@/utils/format'
 import type { CraftProfit } from '../types'
 import { PriceInput } from './price-input'
 
@@ -38,10 +38,10 @@ export function SellTierTable({
   return (
     <div className="flex flex-col gap-3">
       <div className={cn(COLUMNS, 'text-muted-foreground text-xs')}>
-        <span />
+        <span>Pack</span>
         <span className="text-right">Pack price</span>
-        <span className="text-right">Net</span>
-        <span className="text-right">/unit</span>
+        <span className="text-right">Net / pack</span>
+        <span className="text-right">Net / unit</span>
       </div>
 
       {profit.tiers.map((tier) => {
@@ -80,6 +80,18 @@ export function SellTierTable({
 
             <Net value={tier.netProfit} />
             <Net value={tier.perUnit} />
+            <div className="col-span-4 flex items-baseline justify-between gap-3 font-normal text-muted-foreground text-xs">
+              <span>Craft cost / pack</span>
+              <output
+                className="tabular-nums"
+                aria-label={`Craft cost, pack of ${tier.tier}`}
+                aria-live="off"
+              >
+                {profit.craftCost === undefined
+                  ? '—'
+                  : formatKamas(profit.craftCost * tier.tier)}
+              </output>
+            </div>
           </div>
         )
       })}

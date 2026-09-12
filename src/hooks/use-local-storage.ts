@@ -32,7 +32,8 @@ export function readStored<T>(key: string, fallback: T): T {
   try {
     raw = localStorage.getItem(key)
   } catch {
-    return fallback
+    const cached = snapshots.get(key)
+    return cached ? (cached.value as T) : fallback
   }
 
   const cached = snapshots.get(key)
@@ -55,7 +56,13 @@ export function writeStored<T>(key: string, value: T) {
   try {
     localStorage.setItem(key, JSON.stringify(value))
   } catch {
-    // A full or blocked store must not break the calculation in progress.
+    let raw: string | null = null
+    try {
+      raw = localStorage.getItem(key)
+    } catch {
+      raw = null
+    }
+    snapshots.set(key, { raw, value })
   }
   notify(key)
 }

@@ -1,9 +1,15 @@
 import { XIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { getItem } from '@/lib/game-data'
 import type { Item } from '@/types/game'
 import type { WatchlistEntry } from '@/types/saved'
+import { formatAge } from '@/utils/format'
 
 export function Watchlist({
   entries,
@@ -15,28 +21,34 @@ export function Watchlist({
   onRemove: (itemId: number) => void
 }) {
   if (entries.length === 0) {
-    return (
-      <p className="text-muted-foreground text-xs">
-        Star an item to keep it here.
-      </p>
-    )
+    return <p className="text-muted-foreground text-xs">No watched items.</p>
   }
 
   return (
     <ul className="flex flex-col">
-      {entries.map(({ itemId }) => {
+      {entries.map(({ itemId, addedAt }) => {
         const item = getItem(itemId)
 
         return (
-          <li key={itemId} className="group flex items-center gap-2">
+          <li key={itemId} className="flex items-center gap-3 border-b py-3">
             {item ? (
               <button
                 type="button"
                 onClick={() => onSelect(item)}
-                className="flex min-w-0 flex-1 items-center gap-2.5 rounded-md py-1.5 text-left outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-md px-2 py-2 text-left outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <img src={item.iconUrl} alt="" className="size-6 shrink-0" />
-                <span className="truncate">{item.name}</span>
+                <img src={item.iconUrl} alt="" className="size-10 shrink-0" />
+                <span className="min-w-0 flex-1">
+                  <span className="wrap-anywhere block font-medium">
+                    {item.name}
+                  </span>
+                  <span className="mt-1 block text-muted-foreground text-xs">
+                    {item.type} · level {item.level}
+                  </span>
+                </span>
+                <span className="hidden shrink-0 text-muted-foreground text-xs sm:block">
+                  Added {formatAge(addedAt)}
+                </span>
               </button>
             ) : (
               // A regenerated game bundle must not strand a saved list.
@@ -44,15 +56,22 @@ export function Watchlist({
                 Item {itemId}
               </span>
             )}
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label={`Remove ${item?.name ?? itemId} from watchlist`}
-              onClick={() => onRemove(itemId)}
-              className="opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100"
-            >
-              <XIcon className="size-3.5" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon-lg"
+                    aria-label={`Remove ${item?.name ?? itemId} from watchlist`}
+                    onClick={() => onRemove(itemId)}
+                    className="text-muted-foreground hover:text-destructive"
+                  />
+                }
+              >
+                <XIcon className="size-4" />
+              </TooltipTrigger>
+              <TooltipContent>Remove from watchlist</TooltipContent>
+            </Tooltip>
           </li>
         )
       })}

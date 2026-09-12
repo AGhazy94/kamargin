@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { formatKamas } from '@/utils/format'
 
 function parse(raw: string): number | undefined {
   const digits = raw.replace(/[^\d]/g, '')
@@ -36,7 +37,7 @@ export function PriceInput({
         inputMode="numeric"
         autoComplete="off"
         placeholder={placeholder}
-        value={value === undefined ? '' : String(value)}
+        value={value === undefined ? '' : formatKamas(value)}
         onChange={(event) => onChange(parse(event.target.value))}
         className={cn('text-right tabular-nums', hasSlot && 'pr-12')}
       />
