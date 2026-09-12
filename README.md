@@ -55,7 +55,7 @@ inputs it is missing, and offers to take them.
 <p align="center"><em>Craft cost — one recipe, with the margin at each sale tier beside it.</em></p>
 
 > The figures in both screenshots come from made-up prices, not a real market. Retake them with
-> `npm run capture:screenshots` while `npm run dev` is up; they double as the manifest screenshots.
+> `pnpm run capture:screenshots` while `pnpm run dev` is up; they double as the manifest screenshots.
 
 ## Screenshot import
 
@@ -79,30 +79,36 @@ can clear or evict that storage. This does not add offline navigation or an app-
 The review sheet, page-wide drop and paste, the recipe checklist and per-row drop targets
 are all in. Manual crop controls and the examples strip remain deferred.
 
-After changing OCR dependencies, run `npm run generate:ocr-assets`; CI verifies the
+After changing OCR dependencies, run `pnpm run generate:ocr-assets`; CI verifies the
 vendored bytes without downloading anything. Real word-list fixtures can be regenerated
-with `npm run capture:ocr-fixtures -- /absolute/path/to/screenshots`. Screenshot originals
+with `pnpm run capture:ocr-fixtures -- /absolute/path/to/screenshots`. Screenshot originals
 stay local; tests use captured word boxes and confidence, without loading WASM.
 
 ## Running it
 
 ```sh
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 Vite prints the local URL. The dev server serves the app under the `/kamargin/` base path,
 matching the GitHub Pages project site.
 
+**pnpm, not npm.** The version is pinned by `packageManager` in
+[package.json](package.json), so Corepack hands every machine and every CI job the same one.
+npm's lockfile cannot express this dependency tree: the wasm fallbacks under `@tailwindcss/oxide`
+and `@oxc-resolver` are pruned by an install on a platform with native bindings, and the result is a
+`package-lock.json` that `npm ci` then rejects on Linux.
+
 | Command             | What it does                             |
 | ------------------- | ---------------------------------------- |
-| `npm run dev`       | Vite dev server on :5173                 |
-| `npm test`          | Vitest, single run                       |
-| `npm run typecheck` | types only                               |
-| `npm run build`     | typecheck + production build             |
-| `npm run check`     | Biome format, lint and import sort, write |
-| `npm run knip`      | unused files and dependencies             |
-| `npm run ci`        | verify everything, no writes              |
+| `pnpm run dev`       | Vite dev server on :5173                 |
+| `pnpm test`          | Vitest, single run                       |
+| `pnpm run typecheck` | types only                               |
+| `pnpm run build`     | typecheck + production build             |
+| `pnpm run check`     | Biome format, lint and import sort, write |
+| `pnpm run knip`      | unused files and dependencies             |
+| `pnpm run ci`        | verify everything, no writes              |
 
 ## How it is put together
 
@@ -110,7 +116,7 @@ React, TypeScript, Vite and Tailwind v4, laid out after
 [bulletproof-react](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md)
 with `shared → features → app` import boundaries enforced by Biome rather than convention.
 UI is shadcn/ui on Base UI. Recipe and item data is bundled ahead of
-time from [dofusdu.de](https://api.dofusdu.de) by `npm run generate:game-data`. Item icons are
+time from [dofusdu.de](https://api.dofusdu.de) by `pnpm run generate:game-data`. Item icons are
 the only third-party runtime requests, and the app renders without them. OCR assets load
 from the site's own origin only after an image is selected.
 
@@ -138,7 +144,7 @@ in the repository settings — the legacy branch source would publish the unbuil
 Releases are tag-driven:
 
 ```sh
-npm version minor
+pnpm version minor
 git push --follow-tags
 ```
 
@@ -154,7 +160,7 @@ absolute URLs in [index.html](index.html).
 ## Contributing
 
 [AGENTS.md](AGENTS.md) is the source of truth for conventions: project structure, import
-boundaries, where tests live, and the comment rules. `npm run ci` is what CI runs.
+boundaries, where tests live, and the comment rules. `pnpm run ci` is what CI runs.
 
 Feature specs and domain research live in [docs/](docs/) — game mechanics there are verified
 against a game version rather than inferred from the code, so read the relevant note before

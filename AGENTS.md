@@ -54,7 +54,7 @@ Vitest. There is no global suite: a test belongs to the folder it exercises.
 - **A test reaches its subject and its helpers relatively.** Layer boundaries bind a test exactly as
   they bind its subject; the override in [biome.jsonc](biome.jsonc) grants only the one-level climb
   this layout forces.
-- `npm test` runs them once; `npx vitest` watches.
+- `pnpm test` runs them once; `pnpm vitest` watches.
 
 ## Project structure — bulletproof-react
 
@@ -120,9 +120,9 @@ Compose features in `src/app/`, don't wire them to each other.
 - **Use theme tokens, never raw colours.** `bg-background`, `text-muted-foreground`, `text-gain` —
   not `bg-neutral-950`. A raw colour is invisible to the theme and breaks in the other mode.
 - **Comments**: see [Comments — one line, the why](#comments--one-line-the-why). Non-negotiable.
-- **Formatting**: `npm run check`. Biome formats, sorts imports and sorts Tailwind classes; don't
+- **Formatting**: `pnpm run check`. Biome formats, sorts imports and sorts Tailwind classes; don't
   hand-order. Class sorting is Biome's `useSortedClasses`, still a nursery rule with an *unsafe*
-  fix — `npm run check` passes `--unsafe` so it actually applies.
+  fix — `pnpm run check` passes `--unsafe` so it actually applies.
 - **Vendored content**: `.agents/skills/` is upstream-verbatim and excluded in `biome.jsonc`.
   Re-sync it, never edit it in place.
 
@@ -149,7 +149,7 @@ This applies to config files (`biome.jsonc`, `vite.config.ts`) exactly as it doe
 
 Components live in `src/components/ui/`, on **Base UI** (`base-nova` style, Lucide icons) — the
 shadcn default since July 2026. Not Radix: don't reintroduce `radix-ui`. Add components with
-`npx shadcn@latest add <name>`, then `npm run check` — generated files carry shadcn's formatting
+`pnpm dlx shadcn@latest add <name>`, then `pnpm run check` — generated files carry shadcn's formatting
 and Biome reformats them to this repo's.
 
 Those files are **yours to edit**, not vendored. They are linted and formatted like any other source.
@@ -178,28 +178,34 @@ needs a `--color-*` mapping in the `@theme inline` block before a utility class 
 
 ## Tooling
 
+**pnpm is the package manager**, pinned by `packageManager` and handed out by Corepack. There is no
+`package-lock.json`; don't add one. npm's lockfile drops the wasm fallbacks under
+`@tailwindcss/oxide` and `@oxc-resolver` when it installs on a platform with native bindings, and
+`npm ci` then rejects its own lockfile on Linux. An install script a dependency wants to run is
+decided once, in [pnpm-workspace.yaml](pnpm-workspace.yaml).
+
 **Biome is the only linter and formatter.** There is no `eslint.config.js` and no `.prettierrc`;
 don't add one.
 
-**knip reports unused files, exports and dependencies**, and runs inside `npm run ci`.
+**knip reports unused files, exports and dependencies**, and runs inside `pnpm run ci`.
 `src/components/ui` is ignored in [knip.jsonc](knip.jsonc) — it is shadcn's directory, whose files
 and exports arrive whole and are re-synced rather than pruned.
 
 **Deployed to GitHub Pages** as a project site, so `base` in [vite.config.ts](vite.config.ts) is
-`/kamargin/` — the dev server serves that prefix too. Releases are tag-driven; `npm version` then
+`/kamargin/` — the dev server serves that prefix too. Releases are tag-driven; `pnpm version` then
 `git push --follow-tags`. The version reaches the bundle as `__APP_VERSION__`.
 
 ## Commands
 
 |                     |                                        |
 | ------------------- | -------------------------------------- |
-| `npm run dev`       | Vite dev server on :5173               |
-| `npm run generate:game-data` | refetch + retrim the bundled game data |
-| `npm run build`     | typecheck + production build           |
-| `npm run typecheck` | types only                             |
-| `npm test`          | Vitest, single run                     |
-| `npm run lint`      | Biome lint (incl. import boundaries)   |
-| `npm run format`    | Biome format, write                    |
-| `npm run check`     | format + lint + import sort, write     |
-| `npm run knip`      | unused files and dependencies          |
-| `npm run ci`        | verify everything, no writes (for CI)  |
+| `pnpm run dev`       | Vite dev server on :5173               |
+| `pnpm run generate:game-data` | refetch + retrim the bundled game data |
+| `pnpm run build`     | typecheck + production build           |
+| `pnpm run typecheck` | types only                             |
+| `pnpm test`          | Vitest, single run                     |
+| `pnpm run lint`      | Biome lint (incl. import boundaries)   |
+| `pnpm run format`    | Biome format, write                    |
+| `pnpm run check`     | format + lint + import sort, write     |
+| `pnpm run knip`      | unused files and dependencies          |
+| `pnpm run ci`        | verify everything, no writes (for CI)  |

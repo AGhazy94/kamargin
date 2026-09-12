@@ -10,11 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      # pnpm before node: the version comes from packageManager, and the cache needs its store.
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-          cache: npm
-      - run: npm ci
-      - run: npm run ci
-      - run: npm test
-      - run: npm run build
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run ci
+      - run: pnpm test
+      - run: pnpm run build

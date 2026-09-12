@@ -1,0 +1,3 @@
+# tesseract.js's only install script is an opencollective donation banner.
+allowBuilds:
+  tesseract.js: false
