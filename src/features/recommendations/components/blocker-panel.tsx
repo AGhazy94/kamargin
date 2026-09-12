@@ -1,6 +1,7 @@
 import { CheckIcon } from 'lucide-react'
 import { useState } from 'react'
 
+import { ItemIcon } from '@/components/item-icon'
 import { PriceInput } from '@/components/price-input'
 import { getItem } from '@/lib/game-data'
 import { cn } from '@/lib/utils'
@@ -29,7 +30,7 @@ function BlockerRow({
 
   return (
     <li className="flex flex-wrap items-center gap-3 py-2">
-      {item && <img src={item.iconUrl} alt="" className="size-8 shrink-0" />}
+      <ItemIcon item={item} className="size-8" />
       <button
         type="button"
         disabled={!item}

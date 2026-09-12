@@ -1,5 +1,6 @@
 import { ChevronRightIcon } from 'lucide-react'
 import { useId } from 'react'
+import { ItemIcon } from '@/components/item-icon'
 import { PriceInput } from '@/components/price-input'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { getItem } from '@/lib/game-data'
@@ -62,11 +63,9 @@ export function IngredientPriceRow({
               />
             )}
             {item && (
-              <img
-                src={item.iconUrl}
-                alt=""
-                className="hidden size-7 shrink-0 sm:block"
-              />
+              <span className="hidden shrink-0 sm:block">
+                <ItemIcon item={item} className="size-7" />
+              </span>
             )}
             <span className="min-w-0">
               <span className="wrap-anywhere block whitespace-normal">

@@ -24,15 +24,18 @@ export function FillPricesDialog({
 }) {
   const [entered, setEntered] = useState<Record<number, number | undefined>>({})
 
+  const priced = Object.entries(entered).filter(
+    ([, packPrice]) => packPrice !== undefined && packPrice > 0,
+  )
+
   const close = () => {
     setEntered({})
     onClose()
   }
 
-  const save = () => {
-    const priced = Object.entries(entered).filter(
-      ([, packPrice]) => packPrice !== undefined && packPrice > 0,
-    )
+  // Enter saves here as it does in the blocker panel, and nothing is an empty save.
+  const submit = () => {
+    if (priced.length === 0) return
     onSave(Object.fromEntries(priced) as Record<number, number>)
     close()
   }
@@ -67,6 +70,7 @@ export function FillPricesDialog({
                 </span>
                 <PriceInput
                   label={`${name} — pack of 1`}
+                  placeholder="×1 price"
                   value={entered[itemId]}
                   onChange={(packPrice) =>
                     setEntered((current) => ({
@@ -74,6 +78,7 @@ export function FillPricesDialog({
                       [itemId]: packPrice,
                     }))
                   }
+                  onSubmit={submit}
                   className="w-32 shrink-0"
                 />
               </div>
@@ -85,7 +90,9 @@ export function FillPricesDialog({
           <Button variant="ghost" onClick={close}>
             Cancel
           </Button>
-          <Button onClick={save}>Save prices</Button>
+          <Button onClick={submit} disabled={priced.length === 0}>
+            Save prices
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

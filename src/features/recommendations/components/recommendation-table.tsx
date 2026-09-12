@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -9,6 +8,7 @@ import {
 import type { Item } from '@/types/game'
 import type { Recommendation } from '../types'
 import { RecommendationRow } from './recommendation-row'
+import { SkeletonRows } from './skeleton-rows'
 
 export function RecommendationTable({
   rows,
@@ -50,11 +50,7 @@ export function RecommendationTable({
             onFill={onFill}
           />
         ))}
-        {sentinelRef && (
-          <TableRow className="hover:bg-transparent">
-            <TableCell ref={sentinelRef} colSpan={6} className="h-2 p-0" />
-          </TableRow>
-        )}
+        {sentinelRef && <SkeletonRows sentinelRef={sentinelRef} />}
       </TableBody>
     </Table>
   )

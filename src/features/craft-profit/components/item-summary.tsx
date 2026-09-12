@@ -1,5 +1,6 @@
 import { StarIcon, XIcon } from 'lucide-react'
 
+import { ItemIcon } from '@/components/item-icon'
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
@@ -22,7 +23,7 @@ export function ItemSummary({
 }) {
   return (
     <div className="flex items-center gap-4">
-      <img src={item.iconUrl} alt="" className="size-11 shrink-0 rounded-md" />
+      <ItemIcon item={item} className="size-11 rounded-md" />
       <div className="min-w-0 flex-1">
         <h1 className="wrap-anywhere font-heading font-semibold text-lg leading-snug">
           {item.name}

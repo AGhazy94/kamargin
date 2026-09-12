@@ -1,3 +1,4 @@
+import { ItemIcon } from '@/components/item-icon'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TableCell, TableRow } from '@/components/ui/table'
@@ -50,7 +51,7 @@ export function RecommendationRow({
           onClick={() => onOpen(item)}
           className="flex min-h-11 w-full items-center gap-3 rounded-md text-left outline-none hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/50"
         >
-          <img src={item.iconUrl} alt="" className="size-8 shrink-0" />
+          <ItemIcon item={item} className="size-8" />
           <span className="min-w-0">
             <span className="wrap-anywhere block whitespace-normal">
               {item.name}

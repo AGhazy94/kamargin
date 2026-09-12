@@ -5,11 +5,15 @@ Source of truth for agent behaviour in this repo. Read in full before your first
 ## What this is
 
 A **client-side, offline** market calculator for the video game Dofus. React + TypeScript + Vite +
-Tailwind v4. No backend, no API calls at runtime — all game data is bundled or user-entered, all
-computation happens in the browser. Persistence, when added, is `localStorage`/IndexedDB.
+Tailwind v4. No backend — all game data is bundled or user-entered, all computation happens in the
+browser. Persistence, when added, is `localStorage`/IndexedDB.
 
 Keep it that way: don't introduce a server, a data-fetching layer, or a runtime network dependency
 without being asked.
+
+**The one runtime fetch is item icons**, lazily loaded from the Dofus CDN. Every one goes through
+[ItemIcon](src/components/item-icon.tsx), which owns the lazy loading and the offline fallback —
+never write a bare `<img src={item.iconUrl}>`. Nothing the app computes depends on it.
 
 Domain research and feature specs live in [docs/](docs/) — read what's relevant there before
 changing domain logic. Game mechanics are verified against a version; don't infer them from code.

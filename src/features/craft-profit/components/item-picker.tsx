@@ -1,6 +1,7 @@
 import { SearchIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
+import { ItemIcon } from '@/components/item-icon'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -76,11 +77,7 @@ export function ItemPicker({ onSelect }: { onSelect: (item: Item) => void }) {
                     setQuery('')
                   }}
                 >
-                  <img
-                    src={item.iconUrl}
-                    alt=""
-                    className="size-10 shrink-0 rounded-sm"
-                  />
+                  <ItemIcon item={item} className="size-10 rounded-sm" />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-medium">
                       {item.name}
