@@ -1,0 +1,197 @@
+{
+  "source": {
+    "filename": "Screenshot 2026-09-12 at 12.09.22 PM.png",
+    "sha256": "89bf28709391af5ad541607a5f08b2aaffe969d6e53d74c5996fd27223e3ef8f",
+    "width": 1106,
+    "height": 304
+  },
+  "engine": {
+    "workerVersion": "7.0.0",
+    "coreVersion": "7.0.0",
+    "languageSha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+  },
+  "locateWords": [
+    {
+      "text": "<<",
+      "bbox": {
+        "x0": 96,
+        "y0": 72,
+        "x1": 182,
+        "y1": 92
+      },
+      "confidence": 47
+    },
+    {
+      "text": "_~=sHogmeiser's",
+      "bbox": {
+        "x0": 230,
+        "y0": 64,
+        "x1": 404,
+        "y1": 94
+      },
+      "confidence": 0
+    },
+    {
+      "text": "Boots",
+      "bbox": {
+        "x0": 414,
+        "y0": 66,
+        "x1": 496,
+        "y1": 88
+      },
+      "confidence": 96
+    },
+    {
+      "text": "Lvl.",
+      "bbox": {
+        "x0": 230,
+        "y0": 102,
+        "x1": 274,
+        "y1": 122
+      },
+      "confidence": 82
+    },
+    {
+      "text": "75",
+      "bbox": {
+        "x0": 284,
+        "y0": 102,
+        "x1": 312,
+        "y1": 122
+      },
+      "confidence": 82
+    },
+    {
+      "text": "1500",
+      "bbox": {
+        "x0": 890,
+        "y0": 82,
+        "x1": 974,
+        "y1": 108
+      },
+      "confidence": 96
+    },
+    {
+      "text": "XP",
+      "bbox": {
+        "x0": 996,
+        "y0": 84,
+        "x1": 1032,
+        "y1": 110
+      },
+      "confidence": 65
+    },
+    {
+      "text": "|",
+      "bbox": {
+        "x0": 1086,
+        "y0": 52,
+        "x1": 1102,
+        "y1": 122
+      },
+      "confidence": 78
+    },
+    {
+      "text": "x0",
+      "bbox": {
+        "x0": 120,
+        "y0": 216,
+        "x1": 152,
+        "y1": 236
+      },
+      "confidence": 85
+    }
+  ],
+  "words": [
+    {
+      "text": "<<",
+      "bbox": {
+        "x0": 96,
+        "y0": 72,
+        "x1": 182,
+        "y1": 92
+      },
+      "confidence": 47
+    },
+    {
+      "text": "_~=sHogmeiser's",
+      "bbox": {
+        "x0": 230,
+        "y0": 64,
+        "x1": 404,
+        "y1": 94
+      },
+      "confidence": 0
+    },
+    {
+      "text": "Boots",
+      "bbox": {
+        "x0": 414,
+        "y0": 66,
+        "x1": 496,
+        "y1": 88
+      },
+      "confidence": 96
+    },
+    {
+      "text": "Lvl.",
+      "bbox": {
+        "x0": 230,
+        "y0": 102,
+        "x1": 274,
+        "y1": 122
+      },
+      "confidence": 82
+    },
+    {
+      "text": "75",
+      "bbox": {
+        "x0": 284,
+        "y0": 102,
+        "x1": 312,
+        "y1": 122
+      },
+      "confidence": 82
+    },
+    {
+      "text": "1500",
+      "bbox": {
+        "x0": 890,
+        "y0": 82,
+        "x1": 974,
+        "y1": 108
+      },
+      "confidence": 96
+    },
+    {
+      "text": "XP",
+      "bbox": {
+        "x0": 996,
+        "y0": 84,
+        "x1": 1032,
+        "y1": 110
+      },
+      "confidence": 65
+    },
+    {
+      "text": "|",
+      "bbox": {
+        "x0": 1086,
+        "y0": 52,
+        "x1": 1102,
+        "y1": 122
+      },
+      "confidence": 78
+    },
+    {
+      "text": "x0",
+      "bbox": {
+        "x0": 120,
+        "y0": 216,
+        "x1": 152,
+        "y1": 236
+      },
+      "confidence": 85
+    }
+  ]
+}
