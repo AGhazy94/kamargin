@@ -11,6 +11,9 @@ computation happens in the browser. Persistence, when added, is `localStorage`/I
 Keep it that way: don't introduce a server, a data-fetching layer, or a runtime network dependency
 without being asked.
 
+Domain research and feature specs live in [docs/](docs/) — read what's relevant there before
+changing domain logic. Game mechanics are verified against a version; don't infer them from code.
+
 ## Response style — concise mode (always on)
 
 Read [.agents/skills/concise-mode/SKILL.md](.agents/skills/concise-mode/SKILL.md) in full before
@@ -51,10 +54,10 @@ src/
 │   ├── errors/
 │   ├── layouts/
 │   └── ui/       # shadcn/ui components
-├── config/       # global config (empty: offline app has no env to validate)
+├── config/       # global config — an offline app has no env to validate
 ├── features/     # feature modules — see src/features/README.md
 ├── hooks/        # shared hooks
-├── lib/          # preconfigured third-party libraries (cn)
+├── lib/          # preconfigured third-party libraries
 ├── stores/       # global state
 ├── testing/      # test utils and mocks
 ├── types/        # shared types
@@ -114,7 +117,7 @@ know why — write **one line stating the _why_**. Never the _what_.
 
 Hard limits:
 
-- **One line.** If it takes two, cut it until it fits, or move the reasoning to AGENTS.md and
+- **One line.** If it takes two, cut it until it fits, or move the reasoning to [docs/](docs/) and
   reference it. A wrapped sentence is two lines.
 - **No restating the code.** `// Local copy: cannot drift from the installed version.` — not
   `// Points $schema at the copy of the schema inside node_modules.`
@@ -134,16 +137,15 @@ and Biome reformats them to this repo's.
 Those files are **yours to edit**, not vendored. They are linted and formatted like any other source.
 
 `cn` is imported from the `cn` package directly (`import { cn } from 'cn'`) — it bundles clsx and
-tailwind-merge. `@/lib/utils` re-exports it. There is no `@/utils/cn`.
+tailwind-merge. `@/lib/utils` re-exports it.
 
 After swapping a UI dependency, Vite's pre-bundle cache goes stale and the page serves
 `504 (Outdated Optimize Dep)`. Restart the dev server; `rm -rf node_modules/.vite` if it persists.
 
 ### Theme
 
-Dofus-flavoured tokens in [src/index.css](src/index.css): aged parchment in light, stained wood and
-lamplight in dark, kama gold as `--primary`, Dofus-egg hues for `--chart-*`. Dark is the default —
-`<html class="dark">` in [index.html](index.html).
+Tokens live in [src/index.css](src/index.css). Dark is the default — `<html class="dark">` in
+[index.html](index.html).
 
 Beyond the shadcn set, four market tokens: `--kama` / `--kama-foreground` for currency, and
 `--gain` / `--loss` for trade outcomes (use these, never bare green/red).
@@ -158,8 +160,8 @@ needs a `--color-*` mapping in the `@theme inline` block before a utility class 
 
 ## Tooling
 
-**Biome is the only linter and formatter** — it replaced ESLint + Prettier and their nine plugins.
-There is no `eslint.config.js` and no `.prettierrc`; don't add one.
+**Biome is the only linter and formatter.** There is no `eslint.config.js` and no `.prettierrc`;
+don't add one.
 
 ## Commands
 
