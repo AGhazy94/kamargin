@@ -1,6 +1,14 @@
 # Feature — Screenshot import, v4
 
-**Status:** specified 2026-09-12. Not built.
+**Status:** built 2026-09-13, except steps 7 and 9 of the build order below.
+
+Shipped: the vendored engine, the pure core, the cancellable queue, the review sheet, page-wide drop
+and paste, the recipe checklist and per-ingredient-row drop targets. Still deferred: **manual crop +
+re-read** (step 7) and **the examples strip / Try a sample** (step 9) — so a screenshot holding two
+dialogs still reads only one, and nothing yet teaches what a good screenshot looks like.
+
+Reviewed in [../qa/screenshot-import-v4-qa.md](../qa/screenshot-import-v4-qa.md); the naming and
+metadata that surround it in [../qa/navigation-and-metadata-audit.md](../qa/navigation-and-metadata-audit.md).
 
 v1–v3 all start the same way: you read a number off the game's market dialog and type it into the
 app. That transcription is the whole cost of using Kamargin — four pack tiers per item, a dozen

@@ -1,6 +1,6 @@
 # Feature — Craft recommendations, v3
 
-**Status:** specified 2026-09-12. Not built.
+**Status:** built 2026-09-12. Shipped as **What to craft** (`#/crafts`).
 
 v1 and v2 answer *"is this one item worth crafting?"* — you must already know which item to ask
 about. v3 answers the question before it: **"given what I've priced, what should I craft?"**
@@ -164,7 +164,8 @@ level inputs is the next step, and a web worker is not needed for arithmetic thi
 
 ## UI
 
-A third route, `/recommendations`, in [src/app/router.tsx](../../src/app/router.tsx) — nav sits
+A third route, `/crafts` (built as `/recommendations`, renamed 2026-09-13; the old path still
+redirects), in [src/app/router.tsx](../../src/app/router.tsx) — nav sits
 between Calculator and Watchlist, `SparklesIcon` from lucide. Server-scoped like every other route
 (`?server=`), and a row click navigates to `href('/', item.id)`: the calculator opens with the item
 loaded and its stored prices already in place. That is the whole hand-off; no new plumbing.
@@ -260,9 +261,12 @@ utils/rank.ts
 utils/tests/rank.test.ts
 ```
 
-## Open, for the build session
+## Settled during the build
 
-- **Coverage hints** — "price Frêne to unlock 23 crafts", ranking unpriced ingredients by how many
-  recipes they block. Pure graph maths, no prices needed, and it is the strongest answer to a cold
-  price book. Proposed but **not** accepted into scope; decide before building the empty state.
-- Whether `unpriced-sale` rows deserve their own filter toggle, or stay merged into the list.
+- **Coverage hints** were accepted into scope, and are the answer to a cold price book:
+  [utils/blockers.ts](../../src/features/recommendations/utils/blockers.ts) ranks unpriced
+  ingredients by how many recipes they hold back, and
+  [blocker-panel.tsx](../../src/features/recommendations/components/blocker-panel.tsx) prices one
+  without leaving the screen.
+- **`unpriced-sale` rows stayed merged** into the list, behind a single `Hide incomplete` toggle
+  rather than a filter of their own.

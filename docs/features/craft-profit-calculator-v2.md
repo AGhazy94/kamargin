@@ -1,6 +1,7 @@
 # Feature — Craft profit calculator, v2
 
-**Status:** built 2026-09-12.
+**Status:** built 2026-09-12. The screen it describes is now called **Craft cost** (`#/cost`);
+it shipped as "Calculator" at `/calculator`, which still redirects.
 
 v1 shipped: [craft-profit-calculator.md](craft-profit-calculator.md). It answers the question for one
 item at one price. v2 makes it match how the marketplace actually works, and gives the work somewhere
