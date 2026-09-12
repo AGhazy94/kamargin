@@ -3,7 +3,7 @@ import type { Worker } from 'tesseract.js'
 
 import type { Item } from '@/types/game'
 
-import type { OcrJob } from '../types'
+import type { ImportRequest, OcrJob } from '../types'
 import { matchItem } from '../utils/match-item'
 
 export function useOcrQueue(items: readonly Item[]) {
@@ -147,13 +147,14 @@ export function useOcrQueue(items: readonly Item[]) {
     }
   }
 
-  function enqueue(files: readonly File[]) {
+  function enqueue(requests: readonly ImportRequest[]) {
     const current = state.current
     if (!current.mounted) return
-    const additions = files.map(
-      (file): OcrJob => ({
+    const additions = requests.map(
+      ({ file, itemId }): OcrJob => ({
         id: crypto.randomUUID(),
         file,
+        lockedItemId: itemId,
         sourceUrl: URL.createObjectURL(file),
         status: 'queued',
         progress: 0,

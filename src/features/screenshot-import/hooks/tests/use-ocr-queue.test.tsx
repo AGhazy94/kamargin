@@ -26,9 +26,9 @@ const reading: OcrReading = {
   width: 20,
   height: 20,
 }
-const files = ['first.png', 'second.png'].map(
-  (name) => new File(['image'], name, { type: 'image/png' }),
-)
+const files = ['first.png', 'second.png'].map((name) => ({
+  file: new File(['image'], name, { type: 'image/png' }),
+}))
 
 function deferred<Value>() {
   let resolve!: (value: Value) => void

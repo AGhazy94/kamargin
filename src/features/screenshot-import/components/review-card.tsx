@@ -40,6 +40,7 @@ import {
 } from '../types'
 import {
   canConfirm,
+  contradictsRow,
   flaggedTiers,
   type ImportReceipt,
   needsItemReview,
@@ -81,6 +82,7 @@ export function ReviewCard({
   const parsed = job.reading?.parsed
   const flags = flaggedTiers(job, draft)
   const itemNeedsReview = needsItemReview(job, draft)
+  const mismatched = contradictsRow(job, draft)
   const average = parsed?.averagePrice
   const averageFlagged =
     average !== undefined && average.confidence < OCR_CONFIDENCE_THRESHOLD
@@ -288,6 +290,13 @@ export function ReviewCard({
                   Retry
                 </Button>
               </div>
+            )}
+            {mismatched && (
+              <p role="alert" className="mb-4 text-loss text-xs">
+                This screenshot reads as{' '}
+                {getItem(job.match?.itemId ?? -1)?.name ?? 'another item'}, but
+                it was dropped on {item?.name}. Check before confirming.
+              </p>
             )}
             {job.status === 'ready' && !parsed?.isMarketDialog && (
               <p className="mb-4 text-muted-foreground text-xs">

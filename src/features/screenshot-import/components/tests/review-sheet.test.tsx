@@ -30,7 +30,9 @@ const queue = vi.hoisted(() => ({
 }))
 vi.mock('../../hooks/use-ocr-queue', () => ({ useOcrQueue: () => queue }))
 
-const initialFiles = [new File(['image'], 'market.png', { type: 'image/png' })]
+const initialImports = [
+  { file: new File(['image'], 'market.png', { type: 'image/png' }) },
+]
 const greedo = searchItems('Greedo Rum')[0]
 const kido = searchItems('Kido Beak')[0]
 
@@ -64,7 +66,7 @@ function openSheet(onClose = vi.fn()) {
       <TooltipProvider>
         <ReviewSheet
           serverId={355}
-          initialFiles={initialFiles}
+          initialImports={initialImports}
           onClose={onClose}
         />
       </TooltipProvider>
@@ -115,7 +117,7 @@ describe('ReviewSheet', () => {
   it('queues the original files only once under StrictMode', async () => {
     openSheet()
     await waitFor(() => expect(queue.enqueue).toHaveBeenCalledTimes(1))
-    expect(queue.enqueue).toHaveBeenCalledWith(initialFiles)
+    expect(queue.enqueue).toHaveBeenCalledWith(initialImports)
   })
 
   it('keeps OCR results and edits out of storage until confirmation, then supports undo', async () => {

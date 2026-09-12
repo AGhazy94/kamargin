@@ -47,9 +47,14 @@ export type OcrReading = {
   height: number
 }
 
+/** A file to read, optionally already bound to an item by where it was dropped. */
+export type ImportRequest = { file: File; itemId?: number }
+
 export type OcrJob = {
   id: string
   file: File
+  /** Set when the drop named the item, so matching has nothing left to decide. */
+  lockedItemId?: number
   sourceUrl: string
   status: 'queued' | 'reading' | 'ready' | 'error' | 'cancelled'
   progress: number

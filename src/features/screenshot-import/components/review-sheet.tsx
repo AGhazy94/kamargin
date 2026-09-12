@@ -16,7 +16,7 @@ import { getItems } from '@/lib/game-data'
 
 import engine from '../assets/engine.json'
 import { useOcrQueue } from '../hooks/use-ocr-queue'
-import type { OcrJob, ReviewDraft } from '../types'
+import type { ImportRequest, OcrJob, ReviewDraft } from '../types'
 import {
   canConfirm,
   canConfirmTogether,
@@ -29,16 +29,17 @@ import { ReviewCard } from './review-card'
 
 export function ReviewSheet({
   serverId,
-  initialFiles,
+  initialImports,
   onClose,
 }: {
   serverId: number
-  initialFiles: readonly File[]
+  initialImports: readonly ImportRequest[]
   onClose: () => void
 }) {
   const [items] = useState(getItems)
   const queue = useOcrQueue(items)
   const enqueueInitial = useRef(queue.enqueue)
+  const enqueued = useRef(0)
   const browse = useRef<HTMLInputElement>(null)
   const [drafts, setDrafts] = useState<Record<string, ReviewDraft>>({})
   const [receipts, setReceipts] = useState<Record<string, ImportReceipt>>({})
@@ -47,9 +48,15 @@ export function ReviewSheet({
     SERVERS.find((server) => server.id === serverId)?.name ?? String(serverId)
 
   useEffect(() => {
-    const timer = setTimeout(() => enqueueInitial.current(initialFiles), 0)
+    // Counted inside the timer so StrictMode's cancelled first pass keeps its files.
+    const timer = setTimeout(() => {
+      const pending = initialImports.slice(enqueued.current)
+      if (!pending.length) return
+      enqueued.current = initialImports.length
+      enqueueInitial.current(pending)
+    }, 0)
     return () => clearTimeout(timer)
-  }, [initialFiles])
+  }, [initialImports])
 
   function draftFor(job: OcrJob) {
     return drafts[job.id] ?? createReviewDraft(job)
@@ -161,7 +168,9 @@ export function ReviewSheet({
             className="sr-only"
             aria-label="Add screenshot files"
             onChange={(event) => {
-              queue.enqueue(Array.from(event.target.files ?? []))
+              queue.enqueue(
+                Array.from(event.target.files ?? []).map((file) => ({ file })),
+              )
               event.target.value = ''
             }}
           />

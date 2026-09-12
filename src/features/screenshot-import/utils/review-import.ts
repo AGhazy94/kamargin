@@ -14,8 +14,8 @@ import {
 
 export function createReviewDraft(job: OcrJob): ReviewDraft {
   return {
-    itemId: job.match?.itemId,
-    itemReviewed: false,
+    itemId: job.lockedItemId ?? job.match?.itemId,
+    itemReviewed: job.lockedItemId !== undefined,
     prices: Object.fromEntries(
       Object.entries(job.reading?.parsed.tiers ?? {}).map(([tier, field]) => [
         tier,
@@ -36,8 +36,19 @@ export function flaggedTiers(job: OcrJob, draft: ReviewDraft) {
   )
 }
 
+export function contradictsRow(job: OcrJob, draft: ReviewDraft) {
+  return (
+    job.lockedItemId !== undefined &&
+    draft.itemId === job.lockedItemId &&
+    job.match?.confident === true &&
+    job.match.itemId !== job.lockedItemId
+  )
+}
+
 export function needsItemReview(job: OcrJob, draft: ReviewDraft) {
   const parsed = job.reading?.parsed
+  // A row names the item, but a screenshot that names a different one is a mis-drop.
+  if (contradictsRow(job, draft)) return true
   return (
     !draft.itemReviewed &&
     (!job.match?.confident ||

@@ -13,6 +13,7 @@ import { ItemPicker } from './components/item-picker'
 import { ItemSummary } from './components/item-summary'
 import { ProfitPanel } from './components/profit-panel'
 import { ProfitSummaryBar } from './components/profit-summary-bar'
+import { RecipeChecklist } from './components/recipe-checklist'
 import { RecipeTable } from './components/recipe-table'
 import { ResourcePanel } from './components/resource-panel'
 import { SnapshotDialog } from './components/snapshot-dialog'
@@ -24,13 +25,17 @@ export function CraftProfitCalculator({
   item,
   onItemChange,
   savedPanel = null,
+  importHint = null,
   onTakeSnapshot,
+  onDropScreenshots,
 }: {
   serverId: number
   item: Item | null
   onItemChange: (item: Item | null) => void
   savedPanel?: ReactNode
+  importHint?: ReactNode
   onTakeSnapshot?: (snapshot: NewSnapshot) => void
+  onDropScreenshots?: (itemId: number, files: File[]) => void
 }) {
   const { book } = usePriceBook(serverId)
   const { isWatched, toggleWatched } = useWatchlist(serverId)
@@ -82,6 +87,7 @@ export function CraftProfitCalculator({
               }
               onOpenItem={onItemChange}
             />
+            {importHint}
           </ScrollPanel>
         ) : (
           <ScrollPanel
@@ -90,6 +96,7 @@ export function CraftProfitCalculator({
             header={
               <div className="flex flex-col gap-6">
                 {summary}
+                <RecipeChecklist profit={profit} />
                 <Separator />
               </div>
             }
@@ -100,7 +107,9 @@ export function CraftProfitCalculator({
               prices={prices}
               book={book}
               onPriceChange={setPrice}
+              onDropScreenshots={onDropScreenshots}
             />
+            {importHint}
           </ScrollPanel>
         )}
 

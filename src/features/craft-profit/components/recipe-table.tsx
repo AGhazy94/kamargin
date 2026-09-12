@@ -18,11 +18,13 @@ export function RecipeTable({
   prices,
   book,
   onPriceChange,
+  onDropScreenshots,
 }: {
   profit: CraftProfit
   prices: PackPriceMap
   book: PriceBook
   onPriceChange: (itemId: number, tier: PackTier, packPrice?: number) => void
+  onDropScreenshots?: (itemId: number, files: File[]) => void
 }) {
   const [openItemIds, setOpenItemIds] = useState<Set<number>>(() => new Set())
 
@@ -59,6 +61,10 @@ export function RecipeTable({
             }
             onPriceChange={(tier, packPrice) =>
               onPriceChange(line.itemId, tier, packPrice)
+            }
+            onDropScreenshots={
+              onDropScreenshots &&
+              ((files) => onDropScreenshots(line.itemId, files))
             }
           />
         ))}

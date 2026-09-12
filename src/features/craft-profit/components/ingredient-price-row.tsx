@@ -1,8 +1,9 @@
-import { ChevronRightIcon } from 'lucide-react'
+import { ChevronRightIcon, ImageDownIcon } from 'lucide-react'
 import { useId } from 'react'
 import { ItemIcon } from '@/components/item-icon'
 import { PriceInput } from '@/components/price-input'
 import { TableCell, TableRow } from '@/components/ui/table'
+import { useFileDrop } from '@/hooks/use-file-drop'
 import { getItem } from '@/lib/game-data'
 import { cn } from '@/lib/utils'
 import { isStale, type PriceEntry } from '@/stores/price-book'
@@ -19,6 +20,7 @@ export function IngredientPriceRow({
   expanded,
   onToggle,
   onPriceChange,
+  onDropScreenshots,
 }: {
   line: ProfitLine
   packPrices: PackPrices
@@ -26,12 +28,14 @@ export function IngredientPriceRow({
   expanded: boolean
   onToggle: () => void
   onPriceChange: (tier: PackTier, packPrice?: number) => void
+  onDropScreenshots?: (files: File[]) => void
 }) {
   const item = getItem(line.itemId)
   const name = item?.name ?? `Item ${line.itemId}`
   const priced = line.unitPrice !== undefined
   const multiTier = (line.pricedTierCount ?? 0) > 1
   const panelId = useId()
+  const drop = useFileDrop(onDropScreenshots)
 
   // With nothing recorded yet, a pack of one is what you are most likely looking at.
   const editTier = line.winningTier ?? 1
@@ -39,7 +43,14 @@ export function IngredientPriceRow({
 
   return (
     <>
-      <TableRow data-unpriced={!priced}>
+      <TableRow
+        data-unpriced={!priced}
+        {...drop.handlers}
+        className={cn(
+          drop.over &&
+            'bg-primary/10 outline-2 outline-primary -outline-offset-2',
+        )}
+      >
         <TableCell className="w-full max-w-0">
           <button
             type="button"
@@ -78,6 +89,12 @@ export function IngredientPriceRow({
               </span>
             </span>
           </button>
+          {drop.over && (
+            <span className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-0.5 font-medium text-primary-foreground text-xs">
+              <ImageDownIcon aria-hidden className="size-3.5 shrink-0" />
+              Drop to price {name}
+            </span>
+          )}
         </TableCell>
         <TableCell className="hidden text-right text-muted-foreground tabular-nums sm:table-cell">
           {line.quantity}
