@@ -1,9 +1,9 @@
-import { Suspense } from "react";
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react'
+import { Suspense } from 'react'
 
-import { ErrorBoundary } from "react-error-boundary";
+import { ErrorBoundary } from 'react-error-boundary'
 
-import { MainErrorFallback } from "@/components/errors/main";
+import { MainErrorFallback } from '@/components/errors/main'
 
 export function AppProvider({ children }: { children: ReactNode }) {
   return (
@@ -12,5 +12,5 @@ export function AppProvider({ children }: { children: ReactNode }) {
         {children}
       </ErrorBoundary>
     </Suspense>
-  );
+  )
 }

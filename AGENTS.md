@@ -73,12 +73,18 @@ and no runtime fetching. Add them if that changes.
 - Shared folders (`components`, `config`, `hooks`, `lib`, `stores`, `types`, `utils`) may import
   only from each other — never from `features/` or `app/`.
 
-`import-x/no-restricted-paths` in [eslint.config.js](eslint.config.js) enforces the first two
-directions. **Cross-feature imports need a zone per feature** — when you add `src/features/pricing`,
-add its zone:
+`noRestrictedImports`, scoped by per-layer `overrides` in [biome.json](biome.json), enforces the
+first two directions.
 
-```js
-{ target: './src/features/pricing', from: './src/features', except: ['./pricing'] },
+Biome matches the **import string**, not a resolved path, so the rules only see `@/…` specifiers.
+That is why `../../**` is blocked from those layers too — a relative climb would otherwise slip past
+the layer check. Always cross a layer boundary with `@/`.
+
+**Cross-feature imports are not yet enforced** — that needs a pattern per feature. When you add
+`src/features/pricing`, add to the `src/features/**` override's patterns:
+
+```json
+{ "group": ["@/features/*/**", "!@/features/pricing/**"] }
 ```
 
 Compose features in `src/app/`, don't wire them to each other.
@@ -90,16 +96,25 @@ Compose features in `src/app/`, don't wire them to each other.
 - **Styling**: Tailwind utility classes. No CSS modules, no styled-components. Tailwind v4 is
   configured in CSS (`src/index.css`) — there is no `tailwind.config.js`.
 - **Comments**: only when the code can't speak for itself, one line, the _why_ not the _what_.
-- **Formatting**: `npm run format`. Prettier sorts imports and Tailwind classes; don't hand-order.
-- **Vendored content**: `.agents/skills/` is upstream-verbatim and in `.prettierignore`. Re-sync it,
-  never edit it in place.
+- **Formatting**: `npm run check`. Biome formats, sorts imports and sorts Tailwind classes; don't
+  hand-order. Class sorting is Biome's `useSortedClasses`, still a nursery rule with an *unsafe*
+  fix — `npm run check` passes `--unsafe` so it actually applies.
+- **Vendored content**: `.agents/skills/` is upstream-verbatim and excluded in `biome.json`.
+  Re-sync it, never edit it in place.
+
+## Tooling
+
+**Biome is the only linter and formatter** — it replaced ESLint + Prettier and their nine plugins.
+There is no `eslint.config.js` and no `.prettierrc`; don't add one.
 
 ## Commands
 
-|                     |                              |
-| ------------------- | ---------------------------- |
-| `npm run dev`       | Vite dev server on :5173     |
-| `npm run build`     | typecheck + production build |
-| `npm run typecheck` | types only                   |
-| `npm run lint`      | oxlint                       |
-| `npm run format`    | Prettier write               |
+|                     |                                        |
+| ------------------- | -------------------------------------- |
+| `npm run dev`       | Vite dev server on :5173               |
+| `npm run build`     | typecheck + production build           |
+| `npm run typecheck` | types only                             |
+| `npm run lint`      | Biome lint (incl. import boundaries)   |
+| `npm run format`    | Biome format, write                    |
+| `npm run check`     | format + lint + import sort, write     |
+| `npm run ci`        | verify everything, no writes (for CI)  |

@@ -1,0 +1,96 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.13/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": {
+    "includes": ["**", "!dist", "!.agents/skills", "!public"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double",
+      "semicolons": "asNeeded",
+      "trailingCommas": "all"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "domains": { "react": "recommended" },
+    "rules": {
+      "preset": "recommended",
+      "nursery": {
+        "useSortedClasses": {
+          "level": "warn",
+          "options": { "functions": ["cn", "clsx"] }
+        }
+      }
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": { "source": { "organizeImports": "on" } }
+  },
+  "overrides": [
+    {
+      "includes": ["src/features/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/app/**"],
+                    "message": "A feature must not import from the app layer. Compose features in src/app instead."
+                  },
+                  {
+                    "group": ["../../**"],
+                    "message": "Relative imports must not climb out of the module. Use the @/ alias, which the layer rules can see."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "src/components/**",
+        "src/config/**",
+        "src/hooks/**",
+        "src/lib/**",
+        "src/stores/**",
+        "src/types/**",
+        "src/utils/**"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/app/**", "@/features/**"],
+                    "message": "Shared code must not import from features or the app layer. Dependencies point one way: shared -> features -> app."
+                  },
+                  {
+                    "group": ["../../**"],
+                    "message": "Relative imports must not climb out of the module. Use the @/ alias, which the layer rules can see."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
