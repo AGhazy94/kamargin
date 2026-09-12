@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat \"$CLAUDE_PROJECT_DIR/.claude/rules/session-defaults.md\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "H=\"$CLAUDE_PROJECT_DIR/.claude/hooks/no-recursive-grep.py\"; if command -v python3 >/dev/null 2>&1; then exec python3 \"$H\"; else exec /usr/bin/python3 \"$H\"; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
