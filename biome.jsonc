@@ -12,6 +12,10 @@
     "indentWidth": 2,
     "lineWidth": 80
   },
+  "css": {
+    // Tailwind v4 configures in CSS: @theme, @custom-variant, @apply.
+    "parser": { "tailwindDirectives": true }
+  },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",

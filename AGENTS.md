@@ -50,11 +50,11 @@ src/
 ├── components/   # shared components
 │   ├── errors/
 │   ├── layouts/
-│   └── ui/
+│   └── ui/       # shadcn/ui components
 ├── config/       # global config (empty: offline app has no env to validate)
 ├── features/     # feature modules — see src/features/README.md
 ├── hooks/        # shared hooks
-├── lib/          # preconfigured third-party libraries
+├── lib/          # preconfigured third-party libraries (cn)
 ├── stores/       # global state
 ├── testing/      # test utils and mocks
 ├── types/        # shared types
@@ -96,6 +96,8 @@ Compose features in `src/app/`, don't wire them to each other.
   split exists to give the config file Node types, which this project doesn't need.
 - **Styling**: Tailwind utility classes. No CSS modules, no styled-components. Tailwind v4 is
   configured in CSS (`src/index.css`) — there is no `tailwind.config.js`.
+- **Use theme tokens, never raw colours.** `bg-background`, `text-muted-foreground`, `text-gain` —
+  not `bg-neutral-950`. A raw colour is invisible to the theme and breaks in the other mode.
 - **Comments**: see [Comments — one line, the why](#comments--one-line-the-why). Non-negotiable.
 - **Formatting**: `npm run check`. Biome formats, sorts imports and sorts Tailwind classes; don't
   hand-order. Class sorting is Biome's `useSortedClasses`, still a nursery rule with an *unsafe*
@@ -121,6 +123,30 @@ Hard limits:
 - **No TODO without an owner or issue.** A bare `// TODO: fix` is noise.
 
 This applies to config files (`biome.jsonc`, `vite.config.ts`) exactly as it does to `src/`.
+
+## UI — shadcn/ui and the theme
+
+Components live in `src/components/ui/` (Radix base, `radix-nova` style, Lucide icons). Add more
+with `npx shadcn@latest add <name>`, then run `npm run check` — generated files use shadcn's own
+formatting, and Biome reformats them to this repo's.
+
+Those files are **yours to edit**, not vendored. They are linted and formatted like any other source.
+
+`cn` comes from `@/lib/utils` (a re-export of the `cn` package, which bundles clsx and
+tailwind-merge). There is no `@/utils/cn`.
+
+### Theme
+
+Dofus-flavoured tokens in [src/index.css](src/index.css): aged parchment in light, stained wood and
+lamplight in dark, kama gold as `--primary`, Dofus-egg hues for `--chart-*`. Dark is the default —
+`<html class="dark">` in [index.html](index.html).
+
+Beyond the shadcn set, four market tokens: `--kama` / `--kama-foreground` for currency, and
+`--gain` / `--loss` for trade outcomes (use these, never bare green/red).
+
+Change a colour in **one place**: the `:root` and `.dark` blocks. Every token is `oklch`, so keep
+new ones in `oklch` too — mixing colour spaces makes lightness ramps inconsistent. Any new token
+needs a `--color-*` mapping in the `@theme inline` block before a utility class can see it.
 
 ## Tooling
 
