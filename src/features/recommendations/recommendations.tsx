@@ -4,7 +4,8 @@ import { ScrollPanel } from '@/components/scroll-panel'
 import { getCraftableItems, getJobName } from '@/lib/game-data'
 import { usePriceBook, writeTierPrice } from '@/stores/price-book'
 import type { Item } from '@/types/game'
-import { BlockerHint, EmptyState, NoMatches } from './components/empty-state'
+import { BlockerPanel } from './components/blocker-panel'
+import { EmptyState, NoMatches } from './components/empty-state'
 import { FillPricesDialog } from './components/fill-prices-dialog'
 import { FilterRow } from './components/filter-row'
 import { RecommendationTable } from './components/recommendation-table'
@@ -47,6 +48,18 @@ export function Recommendations({
     [counts.ranked, inFilter, book],
   )
 
+  const blockerPanel = (
+    <BlockerPanel
+      // A new filter is a new backlog: the queue and its saved rows start over.
+      key={`${filters.jobId}:${filters.minLevel}:${filters.maxLevel}`}
+      blockers={blockers}
+      onOpen={onOpenItem}
+      onPrice={(itemId, packPrice) =>
+        writeTierPrice(serverId, itemId, 1, packPrice)
+      }
+    />
+  )
+
   return (
     <>
       <ScrollPanel
@@ -70,19 +83,19 @@ export function Recommendations({
           />
         ) : rows.length === 0 ? (
           <EmptyState
-            hasPrices={Object.keys(book).length > 0}
-            blockers={blockers}
+            description={
+              Object.keys(book).length > 0
+                ? 'Nothing ranks yet — every craft here is still missing an ingredient price.'
+                : 'Price a few resources and your crafts will rank here.'
+            }
+            blockerPanel={blockerPanel}
             calculatorHref={calculatorHref}
             onReset={reset}
           />
         ) : (
           <>
-            {/* The backlog stays visible: the hint says which of it to clear first. */}
-            {counts.ranked === 0 && (
-              <div className="pt-4">
-                <BlockerHint blockers={blockers} />
-              </div>
-            )}
+            {/* The backlog stays visible: the panel says which of it to clear first. */}
+            {counts.ranked === 0 && <div className="py-4">{blockerPanel}</div>}
             <RecommendationTable
               rows={visible}
               onOpen={onOpenItem}

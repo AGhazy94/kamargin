@@ -17,12 +17,17 @@ export function PriceInput({
   placeholder = '0',
   reference,
   className,
+  onBlur,
+  onSubmit,
 }: {
   id?: string
   value?: number
   onChange: (value: number | undefined) => void
   label: string
   placeholder?: string
+  onBlur?: () => void
+  /** Enter, for a field that records rather than edits in place. */
+  onSubmit?: () => void
   /** Passing the prop reserves the trailing slot, so filling it later shifts nothing. */
   reference?: ReactNode
   className?: string
@@ -39,6 +44,10 @@ export function PriceInput({
         placeholder={placeholder}
         value={value === undefined ? '' : formatKamas(value)}
         onChange={(event) => onChange(parse(event.target.value))}
+        onBlur={onBlur}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') onSubmit?.()
+        }}
         className={cn('text-right tabular-nums', hasSlot && 'pr-12')}
       />
       {hasSlot && (

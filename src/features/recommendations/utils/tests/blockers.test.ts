@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { topBlockers } from '../blockers'
+import { mergeBlockers, topBlockers } from '../blockers'
 import { book, craftable } from './fixtures'
 
 const ITEMS = [
@@ -36,5 +36,32 @@ describe('topBlockers', () => {
 
   it('returns at most the requested number', () => {
     expect(topBlockers(ITEMS, {}, 1)).toHaveLength(1)
+  })
+})
+
+describe('mergeBlockers', () => {
+  const blocker = (itemId: number, recipeCount = 1) => ({
+    itemId,
+    name: `Item ${itemId}`,
+    recipeCount,
+  })
+  const shown = [blocker(1), blocker(2), blocker(3)]
+
+  it('holds a priced row in place and refills around it', () => {
+    const merged = mergeBlockers(shown, [blocker(3), blocker(4)], { 2: 500 })
+
+    expect(merged.map((entry) => entry.itemId)).toEqual([3, 2, 4])
+  })
+
+  it('replaces the whole list when nothing was priced', () => {
+    const merged = mergeBlockers(shown, [blocker(7), blocker(8)], {})
+
+    expect(merged.map((entry) => entry.itemId)).toEqual([7, 8])
+  })
+
+  it('keeps every priced row even when the ranking empties', () => {
+    const merged = mergeBlockers(shown, [], { 1: 100, 3: 300 })
+
+    expect(merged.map((entry) => entry.itemId)).toEqual([1, 3])
   })
 })
