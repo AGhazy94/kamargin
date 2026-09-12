@@ -118,6 +118,15 @@ beforeEach(() => {
       disconnect = vi.fn()
     },
   )
+  vi.stubGlobal(
+    'IntersectionObserver',
+    class {
+      observe = vi.fn()
+      unobserve = vi.fn()
+      disconnect = vi.fn()
+      takeRecords = vi.fn(() => [])
+    },
+  )
   localStorage.setItem('serverId', '355')
   localStorage.setItem(
     'watchlist:355',
@@ -156,9 +165,51 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
+describe('renamed screens', () => {
+  it('opens an old /calculator link on the screen it became, item and all', async () => {
+    openRoute('/calculator?server=355&item=910')
+    await screen.findByRole('textbox', { name: 'Sale price, pack of 1' })
+    expect(
+      screen.getByRole('link', { name: 'Craft cost' }).getAttribute('href'),
+    ).toBe('/cost?server=kourial&item=910-hogmeisers-boots')
+    expect(document.title).toContain('| Kamargin')
+  })
+
+  it('opens an old /recommendations link on What to craft', async () => {
+    openRoute('/recommendations?server=355')
+    await screen.findByRole('heading', { name: /craft/i })
+    expect(document.title).toBe('What to craft | Kourial | Kamargin')
+  })
+
+  it('rewrites a numeric link to the readable one it should have been', async () => {
+    const view = openRoute('/cost?server=355&item=910')
+    await screen.findByRole('textbox', { name: 'Sale price, pack of 1' })
+    expect(view.getByTestId('location').textContent).toBe(
+      '/cost?server=kourial&item=910-hogmeisers-boots',
+    )
+  })
+
+  it('leaves an item it cannot resolve exactly as it was typed', async () => {
+    const view = openRoute('/cost?server=kourial&item=99999999')
+    await screen.findByRole('heading', { name: 'Item unavailable' })
+    expect(view.getByTestId('location').textContent).toBe(
+      '/cost?server=kourial&item=99999999',
+    )
+  })
+
+  it('titles an unknown path as not found rather than inheriting a screen', async () => {
+    openRoute('/nope?server=355')
+    await screen.findByRole('heading', { name: 'Page not found' })
+    expect(document.title).toBe('Page not found | Kourial | Kamargin')
+    expect(screen.getByRole('main').getAttribute('aria-label')).toBe(
+      'Page not found',
+    )
+  })
+})
+
 describe('application navigation', () => {
   it('preserves the selected item and last edit across navigation and history', async () => {
-    openRoute('/calculator?server=355&item=910')
+    openRoute('/cost?server=355&item=910')
     fireEvent.change(
       screen.getByRole('textbox', { name: 'Sale price, pack of 1' }),
       { target: { value: '12000' } },
@@ -167,8 +218,8 @@ describe('application navigation', () => {
     await screen.findByRole('heading', { name: /Watchlist/ })
     expect(readPriceBook(355)[ITEM.id].tiers[1]?.packPrice).toBe(12_000)
     expect(
-      screen.getByRole('link', { name: 'Calculator' }).getAttribute('href'),
-    ).toBe('/calculator?server=355&item=910')
+      screen.getByRole('link', { name: 'Craft cost' }).getAttribute('href'),
+    ).toBe('/cost?server=kourial&item=910-hogmeisers-boots')
 
     fireEvent.click(screen.getByRole('button', { name: 'Test back' }))
     await screen.findByRole('textbox', { name: 'Sale price, pack of 1' })
@@ -211,7 +262,7 @@ describe('application navigation', () => {
   })
 
   it('handles unavailable items and snapshot IDs without loading another record', async () => {
-    const view = openRoute('/calculator?server=355&item=99999999')
+    const view = openRoute('/cost?server=355&item=99999999')
     await screen.findByRole('heading', { name: 'Item unavailable' })
     view.unmount()
     openRoute('/snapshots/missing-record?server=355')
@@ -222,7 +273,7 @@ describe('application navigation', () => {
 
 describe('contextual snapshot history', () => {
   it('shows only the current item, keeps the latest row when collapsed, and links to filtered history', () => {
-    openRoute('/calculator?server=355&item=910')
+    openRoute('/cost?server=355&item=910')
     const history = screen.getByRole('region', { name: 'Snapshot history' })
     expect(within(history).getByRole('heading').textContent).toBe(
       'Snapshot history (2)',
@@ -234,7 +285,7 @@ describe('contextual snapshot history', () => {
       within(history)
         .getByRole('link', { name: 'View all' })
         .getAttribute('href'),
-    ).toBe('/snapshots?server=355&item=910')
+    ).toBe('/snapshots?server=kourial&item=910-hogmeisers-boots')
 
     fireEvent.click(
       within(history).getByRole('button', { name: 'Show recent snapshots' }),
@@ -248,20 +299,20 @@ describe('contextual snapshot history', () => {
   })
 
   it('hides history with no selected item or matching records', () => {
-    const view = openRoute('/calculator?server=355')
+    const view = openRoute('/cost?server=355')
     expect(
       screen.queryByRole('region', { name: 'Snapshot history' }),
     ).toBeNull()
     view.unmount()
     localStorage.setItem('snapshots:355', '[]')
-    openRoute('/calculator?server=355&item=910')
+    openRoute('/cost?server=355&item=910')
     expect(
       screen.queryByRole('region', { name: 'Snapshot history' }),
     ).toBeNull()
   })
 
   it('uses the URL server immediately without showing the previous server history', () => {
-    openRoute(`/calculator?server=${OTHER_SERVER.id}&item=910`)
+    openRoute(`/cost?server=${OTHER_SERVER.id}&item=910`)
     const history = screen.getByRole('region', { name: 'Snapshot history' })
     expect(within(history).getByText('Other server quote')).toBeTruthy()
     expect(within(history).queryByText('Latest quote')).toBeNull()
@@ -270,7 +321,7 @@ describe('contextual snapshot history', () => {
 
   it('focuses Close in a preview and requires confirmation before deleting the last match', async () => {
     localStorage.setItem('snapshots:355', JSON.stringify([SNAPSHOT]))
-    openRoute('/calculator?server=355&item=910')
+    openRoute('/cost?server=355&item=910')
     fireEvent.click(
       screen.getByRole('button', { name: /^Open snapshot Latest quote/ }),
     )
@@ -357,7 +408,7 @@ describe('contextual snapshot history', () => {
 
 describe('calculator interaction', () => {
   it('keeps ingredient expanders independent', () => {
-    openRoute('/calculator?server=355&item=910')
+    openRoute('/cost?server=355&item=910')
     const expanders = screen.getAllByRole('button', {
       name: /^Pack prices for /,
     })
@@ -371,7 +422,7 @@ describe('calculator interaction', () => {
   })
 
   it('shows the total craft cost for each sell-pack size', () => {
-    openRoute('/calculator?server=355&item=910')
+    openRoute('/cost?server=355&item=910')
     expect(screen.getByLabelText('Craft cost, pack of 1').textContent).toBe(
       formatKamas(CRAFT_COST),
     )

@@ -1,14 +1,18 @@
 import type { LucideIcon } from 'lucide-react'
 import {
+  ArrowRightIcon,
   CalculatorIcon,
   CameraIcon,
+  ScanTextIcon,
   SparklesIcon,
   StarIcon,
   WifiOffIcon,
 } from 'lucide-react'
 import { Link } from 'react-router'
 
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { PASTE_SHORTCUT } from '@/features/screenshot-import/components/drop-surface'
 import { GAME_DATA_VERSION } from '@/lib/game-data'
 
 type Destination = {
@@ -51,17 +55,12 @@ function Step({ number, children }: { number: number; children: string }) {
 export function LandingRoute({
   destinations,
 }: {
-  destinations: Record<
-    'calculator' | 'crafts' | 'watchlist' | 'snapshots',
-    string
-  >
+  destinations: Record<'cost' | 'crafts' | 'watchlist' | 'snapshots', string>
 }) {
   return (
-    <section
-      className="flex max-w-3xl flex-col gap-10"
-      aria-labelledby="landing-title"
-    >
-      <header className="flex flex-col gap-4">
+    <section className="flex flex-col gap-10" aria-labelledby="landing-title">
+      {/* The prose keeps a reading measure; the cards below get the whole shell. */}
+      <header className="flex max-w-3xl flex-col gap-4">
         <h1
           id="landing-title"
           className="font-heading font-semibold text-3xl leading-tight sm:text-4xl"
@@ -69,28 +68,39 @@ export function LandingRoute({
           Know what a craft is worth before you make it.
         </h1>
         <p className="text-lg text-muted-foreground">
-          A market calculator for Dofus. Enter the prices you see at the
-          marketplace and it costs out every recipe, ranks your profession by
-          margin, and keeps a record of what a craft was worth when you checked.
+          Screenshot the marketplace. Kamargin reads the prices off the dialog
+          and costs out every recipe that uses them — then ranks your profession
+          by margin and keeps a record of what a craft was worth when you
+          checked.
         </p>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
+          <Button render={<Link to={destinations.cost} />}>
+            Price a craft
+            <ArrowRightIcon />
+          </Button>
+          <span className="flex items-center gap-2 text-muted-foreground text-sm">
+            <ScanTextIcon aria-hidden className="size-4 shrink-0" />
+            or drop a screenshot anywhere — even here
+          </span>
+        </div>
         <p className="flex items-center gap-2 text-muted-foreground text-sm">
-          <WifiOffIcon className="size-4 shrink-0" />
-          Runs entirely in your browser. No account, no server — your prices
-          never leave this device.
+          <WifiOffIcon aria-hidden className="size-4 shrink-0" />
+          Runs entirely in your browser. No account, no server — your prices and
+          your screenshots never leave this device.
         </p>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Screen
-          to={destinations.calculator}
+          to={destinations.cost}
           icon={CalculatorIcon}
-          label="Calculator"
-          description="Price one recipe ingredient by ingredient, across all four pack sizes, and see the margin at each sale tier."
+          label="Craft cost"
+          description="One recipe, ingredient by ingredient, across all four pack sizes — and the margin at each sale tier."
         />
         <Screen
           to={destinations.crafts}
           icon={SparklesIcon}
-          label="Crafts"
+          label="What to craft"
           description="Every recipe your prices can reach, ranked by margin — and which ingredient to price next to unlock the most of them."
         />
         <Screen
@@ -107,22 +117,29 @@ export function LandingRoute({
         />
       </div>
 
-      <section aria-labelledby="landing-how" className="flex flex-col gap-3">
+      <section
+        aria-labelledby="landing-how"
+        className="flex max-w-3xl flex-col gap-3"
+      >
         <h2 id="landing-how" className="font-heading font-medium">
           How it works
         </h2>
         <ol className="flex flex-col gap-3">
           <Step number={1}>
-            Pick your server, then type the marketplace prices for a recipe's
-            ingredients — one pack size is enough to start.
+            In game, open the market dialog for each thing you care about and
+            press screenshot. No cropping, no order, no naming.
           </Step>
           <Step number={2}>
-            Every recipe sharing those ingredients is costed at once, so the
-            Crafts screen fills in as you price.
+            {`Pick your server, then drop the whole pile in — or paste with ${PASTE_SHORTCUT}. Each shot names its own item, so you never say twice what the dialog already says once.`}
           </Step>
           <Step number={3}>
-            Snapshot anything worth remembering. Prices go stale after a day and
-            the app says so.
+            Check the numbers and confirm. Every recipe sharing those
+            ingredients is costed at once, so What to craft fills in as you go.
+          </Step>
+          <Step number={4}>
+            Typing still works, for one price or for a server the reader has
+            never seen. Snapshot anything worth remembering — prices go stale
+            after a day and the app says so.
           </Step>
         </ol>
       </section>

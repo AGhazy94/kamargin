@@ -81,7 +81,7 @@ src/
 └── utils/        # shared utilities
 ```
 
-`app/router.tsx` composes the landing page, Calculator, Crafts, Watchlist and Snapshots with
+`app/router.tsx` composes the landing page, Craft cost, What to craft, Watchlist and Snapshots with
 client-side hash routing — which is also why the Pages deploy needs no SPA fallback.
 There is no `features/*/api/`: prices and recipes still require no runtime fetching.
 
