@@ -50,6 +50,10 @@
                     "message": "A feature must not import from the app layer. Compose features in src/app instead."
                   },
                   {
+                    "group": ["@/features/**"],
+                    "message": "No @/features/* imports inside a feature: another feature is off limits (compose them in src/app), and your own feature is reached with a relative path."
+                  },
+                  {
                     "group": ["../../**"],
                     "message": "Relative imports must not climb out of the module. Use the @/ alias, which the layer rules can see."
                   }

@@ -73,26 +73,27 @@ and no runtime fetching. Add them if that changes.
 - Shared folders (`components`, `config`, `hooks`, `lib`, `stores`, `types`, `utils`) may import
   only from each other — never from `features/` or `app/`.
 
-`noRestrictedImports`, scoped by per-layer `overrides` in [biome.json](biome.json), enforces the
-first two directions.
+All three directions are enforced by `noRestrictedImports`, scoped by per-layer `overrides` in
+[biome.json](biome.json). **No config change is needed when you add a feature.**
 
-Biome matches the **import string**, not a resolved path, so the rules only see `@/…` specifiers.
-That is why `../../**` is blocked from those layers too — a relative climb would otherwise slip past
-the layer check. Always cross a layer boundary with `@/`.
+Biome matches the **import string**, not a resolved path, which shapes two of the rules:
 
-**Cross-feature imports are not yet enforced** — that needs a pattern per feature. When you add
-`src/features/pricing`, add to the `src/features/**` override's patterns:
-
-```json
-{ "group": ["@/features/*/**", "!@/features/pricing/**"] }
-```
+- **`@/features/**` is banned inside `src/features/`** — with no exception for your own feature.
+  Another feature is off limits; your own feature is reached by a *relative* path (`../utils/format`).
+  That single rule enforces cross-feature isolation generically, so unlike upstream bulletproof-react
+  — which hand-lists a zone per feature — there is nothing to maintain per feature.
+- **`../../**` is banned** from every layered folder. A relative climb would otherwise escape the
+  layer check, since the rules only see `@/…` specifiers. Cross a layer boundary with `@/`.
 
 Compose features in `src/app/`, don't wire them to each other.
 
 ## Conventions
 
-- **Imports**: use the `@/` alias for anything under `src/`; relative paths only within a folder.
+- **Imports**: use the `@/` alias to cross a layer boundary; use relative paths *within* a feature.
   No barrel `index.ts` files — import by full path; barrels hurt Vite tree-shaking and HMR.
+- **TypeScript**: one [tsconfig.json](tsconfig.json) covers `src/` and `vite.config.ts`. There are no
+  project references and no `tsconfig.app.json`/`tsconfig.node.json` — the Vite template's three-file
+  split exists to give the config file Node types, which this project doesn't need.
 - **Styling**: Tailwind utility classes. No CSS modules, no styled-components. Tailwind v4 is
   configured in CSS (`src/index.css`) — there is no `tailwind.config.js`.
 - **Comments**: only when the code can't speak for itself, one line, the _why_ not the _what_.
