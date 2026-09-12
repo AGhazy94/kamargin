@@ -60,8 +60,10 @@ and knip reports unused files and dependencies.
 
 ## Deploying and releasing
 
-Pushing to `main` deploys to GitHub Pages (`.github/workflows/pages.yml`); enable
-Pages with **Source: GitHub Actions** once, in the repository settings.
+Pushing to the default branch deploys to GitHub Pages
+(`.github/workflows/pages.yml`), with **Source: GitHub Actions** set in the
+repository settings — the legacy branch source would publish the unbuilt
+`index.html`.
 
 Releases are tag-driven:
 
