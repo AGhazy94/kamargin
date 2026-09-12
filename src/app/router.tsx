@@ -198,7 +198,8 @@ export function AppRouter() {
           end={path === '/'}
           className={({ isActive }) =>
             cn(
-              'flex h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-md border-transparent border-b-2 px-2 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring lg:flex-none lg:px-3',
+              // Stacked below sm, where four labels on one line truncate to three letters.
+              'flex h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-md border-transparent border-b-2 px-1 text-[11px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring sm:h-11 sm:flex-row sm:gap-1.5 sm:px-2 sm:text-sm lg:flex-none lg:px-3',
               isActive
                 ? 'border-primary bg-accent font-semibold text-accent-foreground'
                 : 'text-muted-foreground hover:bg-accent hover:text-foreground',

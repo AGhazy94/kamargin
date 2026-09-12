@@ -1,6 +1,7 @@
 import { XIcon } from 'lucide-react'
 
 import { ItemIcon } from '@/components/item-icon'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
@@ -8,16 +9,53 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { getItem } from '@/lib/game-data'
+import { cn } from '@/lib/utils'
+import type { PriceBook } from '@/stores/price-book'
 import type { Item } from '@/types/game'
 import type { WatchlistEntry } from '@/types/saved'
-import { formatAge } from '@/utils/format'
+import { summariseCraft } from '@/utils/craft'
+import { formatAge, formatKamas, formatMargin } from '@/utils/format'
+
+function Figures({ item, book }: { item: Item; book: PriceBook }) {
+  if (!item.recipe) return null
+
+  const { profit, best, stale } = summariseCraft(item, book)
+  const margin = best?.margin
+
+  return (
+    <span className="flex shrink-0 flex-col items-end gap-0.5 text-right">
+      <span
+        className={cn(
+          'font-medium tabular-nums',
+          margin === undefined && 'text-muted-foreground text-sm',
+          margin !== undefined && margin > 0 && 'text-gain',
+          margin !== undefined && margin < 0 && 'text-loss',
+        )}
+      >
+        {margin === undefined
+          ? profit.missingPriceCount > 0
+            ? `${profit.missingPriceCount} to price`
+            : 'No sale price'
+          : `${margin > 0 ? '+' : ''}${formatMargin(margin)}`}
+      </span>
+      <span className="flex items-center gap-1.5 text-muted-foreground text-xs tabular-nums">
+        {stale && <Badge variant="outline">stale</Badge>}
+        {profit.craftCost === undefined
+          ? '—'
+          : `craft ${formatKamas(profit.craftCost)}`}
+      </span>
+    </span>
+  )
+}
 
 export function Watchlist({
   entries,
+  book,
   onSelect,
   onRemove,
 }: {
   entries: readonly WatchlistEntry[]
+  book: PriceBook
   onSelect: (item: Item) => void
   onRemove: (itemId: number) => void
 }) {
@@ -45,11 +83,13 @@ export function Watchlist({
                   </span>
                   <span className="mt-1 block text-muted-foreground text-xs">
                     {item.type} · level {item.level}
+                    <span className="hidden sm:inline">
+                      {' '}
+                      · added {formatAge(addedAt)}
+                    </span>
                   </span>
                 </span>
-                <span className="hidden shrink-0 text-muted-foreground text-xs sm:block">
-                  Added {formatAge(addedAt)}
-                </span>
+                <Figures item={item} book={book} />
               </button>
             ) : (
               // A regenerated game bundle must not strand a saved list.

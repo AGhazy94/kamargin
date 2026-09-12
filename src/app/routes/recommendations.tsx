@@ -1,4 +1,3 @@
-import { SERVERS } from '@/config/servers'
 import { Recommendations } from '@/features/recommendations/recommendations'
 import type { Item } from '@/types/game'
 
@@ -23,9 +22,6 @@ export function RecommendationsRoute({
         >
           What to craft
         </h1>
-        <span className="text-muted-foreground text-sm">
-          {SERVERS.find((server) => server.id === serverId)?.name}
-        </span>
       </header>
       <Recommendations
         serverId={serverId}

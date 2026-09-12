@@ -1,14 +1,7 @@
-import {
-  getPackPrices,
-  isStale,
-  type PriceBook,
-  type PriceEntry,
-  type TierPrice,
-} from '@/stores/price-book'
-import type { Item, PackTier } from '@/types/game'
-import type { PricedIngredient, TierProfit } from '@/types/profit'
-import { cheapestTier, pricedTierCount } from '@/utils/pack-tiers'
-import { calculateCraftProfit, isThinMargin } from '@/utils/profit'
+import type { PriceBook } from '@/stores/price-book'
+import type { Item } from '@/types/game'
+import { summariseCraft } from '@/utils/craft'
+import { isThinMargin } from '@/utils/profit'
 import type {
   Recommendation,
   RecommendationFilters,
@@ -38,27 +31,6 @@ const STATE_ORDER: Record<RowState, number> = {
   'missing-inputs': 2,
 }
 
-// The ranking sorts on margin, so the winning tier must be the one that maximises it.
-export function bestMarginTier(
-  tiers: readonly TierProfit[],
-): TierProfit | undefined {
-  let best: TierProfit | undefined
-
-  for (const tier of tiers) {
-    if (tier.margin === undefined) continue
-    if (best?.margin === undefined || tier.margin > best.margin) best = tier
-  }
-
-  return best
-}
-
-function usedPrice(
-  entry: PriceEntry | undefined,
-  tier: PackTier | undefined,
-): TierPrice | undefined {
-  return tier === undefined ? undefined : entry?.tiers[tier]
-}
-
 export function matchesFilters(
   item: Item,
   { jobId, minLevel, maxLevel }: RecommendationFilters,
@@ -73,33 +45,7 @@ function toRecommendation(
   book: PriceBook,
   now: number,
 ): Recommendation {
-  const recipe = item.recipe ?? []
-  const used: TierPrice[] = []
-
-  const ingredients: PricedIngredient[] = recipe.map((ingredient) => {
-    const entry = book[ingredient.itemId]
-    const prices = getPackPrices(entry)
-    const cheapest = cheapestTier(prices)
-    const price = usedPrice(entry, cheapest?.tier)
-    if (price) used.push(price)
-
-    return {
-      itemId: ingredient.itemId,
-      quantity: ingredient.quantity,
-      unitPrice: cheapest?.unitPrice,
-      winningTier: cheapest?.tier,
-      pricedTierCount: pricedTierCount(prices),
-    }
-  })
-
-  const saleEntry = book[item.id]
-  const profit = calculateCraftProfit({
-    ingredients,
-    salePrices: getPackPrices(saleEntry),
-  })
-  const best = bestMarginTier(profit.tiers)
-  const salePrice = usedPrice(saleEntry, best?.tier)
-  if (salePrice) used.push(salePrice)
+  const { profit, best, stale } = summariseCraft(item, book, now)
 
   const state: RowState =
     profit.missingPriceCount > 0 || profit.craftCost === undefined
@@ -120,8 +66,7 @@ function toRecommendation(
     missing: profit.lines
       .filter((line) => line.unitPrice === undefined)
       .map(({ itemId, quantity }) => ({ itemId, quantity })),
-    // Freshness is shown, never scored: a stale row keeps its place in the order.
-    stale: used.length > 0 && used.every((price) => isStale(price, now)),
+    stale,
     thinMargin: isThinMargin(best),
   }
 }
@@ -138,7 +83,6 @@ function compare(
   b: Recommendation,
   sort: RecommendationSort,
 ): number {
-  // A row with no figure to sort on is not worth promoting, whatever the column.
   if (a.state !== b.state) return STATE_ORDER[a.state] - STATE_ORDER[b.state]
 
   if (sort.key === 'name') {
@@ -150,6 +94,7 @@ function compare(
   const right = figure(b, sort.key)
   if (left !== undefined && right !== undefined && left !== right)
     return sort.direction === 'asc' ? left - right : right - left
+  // A row with no figure to sort on is not worth promoting, whatever the column.
   if (left !== right) return left === undefined ? 1 : -1
 
   if (a.state === 'missing-inputs') {

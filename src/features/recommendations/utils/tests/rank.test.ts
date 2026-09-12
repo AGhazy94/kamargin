@@ -1,14 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
 import type { PriceBook } from '@/stores/price-book'
-import { calculateCraftProfit } from '@/utils/profit'
 import type {
   RecommendationFilters,
   RecommendationSort,
   SortKey,
 } from '../../types'
 import {
-  bestMarginTier,
   countByState,
   DEFAULT_FILTERS,
   DEFAULT_SORT,
@@ -254,27 +252,5 @@ describe('rankRecommendations', () => {
       // Both rank; only the ring has a sale price, so only it has a craft cost to beat.
       expect(rows.map((row) => row.item.name)).toEqual(['Ring', 'Aaa'])
     })
-  })
-})
-
-describe('bestMarginTier', () => {
-  it('picks the tier with the highest margin', () => {
-    const { tiers } = calculateCraftProfit({
-      ingredients: [{ itemId: 1, quantity: 1, unitPrice: 100 }],
-      salePrices: { 1: 150, 10: 2000, 100: 12_000 },
-    })
-
-    expect(bestMarginTier(tiers)?.tier).toBe(10)
-  })
-
-  it('yields nothing when no tier has a margin, where bestTier still picks one', () => {
-    // A free recipe divides by a zero pack cost: perUnit survives, margin cannot.
-    const profit = calculateCraftProfit({
-      ingredients: [{ itemId: 1, quantity: 1, unitPrice: 0 }],
-      salePrices: { 1: 150 },
-    })
-
-    expect(profit.bestTier).toBe(1)
-    expect(bestMarginTier(profit.tiers)).toBeUndefined()
   })
 })

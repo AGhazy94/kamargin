@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 
 import { ScrollPanel } from '@/components/scroll-panel'
-import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { usePriceBook } from '@/stores/price-book'
@@ -15,6 +14,7 @@ import { ItemSummary } from './components/item-summary'
 import { ProfitPanel } from './components/profit-panel'
 import { ProfitSummaryBar } from './components/profit-summary-bar'
 import { RecipeTable } from './components/recipe-table'
+import { ResourcePanel } from './components/resource-panel'
 import { SnapshotDialog } from './components/snapshot-dialog'
 import { useCraftProfit } from './hooks/use-craft-profit'
 import { usePackPrices } from './hooks/use-pack-prices'
@@ -63,15 +63,26 @@ export function CraftProfitCalculator({
         {!item ? (
           <EmptyState />
         ) : status === 'no-recipe' ? (
-          <Card>
-            <CardContent className="flex flex-col gap-6">
-              {summary}
-              <Separator />
-              <p className="text-muted-foreground text-sm">
-                This item can't be crafted.
-              </p>
-            </CardContent>
-          </Card>
+          <ScrollPanel
+            key={item.id}
+            scroll="lg"
+            header={
+              <div className="flex flex-col gap-6">
+                {summary}
+                <Separator />
+              </div>
+            }
+          >
+            <ResourcePanel
+              item={item}
+              packPrices={prices[item.id] ?? {}}
+              entry={book[item.id]}
+              onPriceChange={(tier, packPrice) =>
+                setPrice(item.id, tier, packPrice)
+              }
+              onOpenItem={onItemChange}
+            />
+          </ScrollPanel>
         ) : (
           <ScrollPanel
             key={item.id}

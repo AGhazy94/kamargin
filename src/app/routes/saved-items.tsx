@@ -16,9 +16,12 @@ import { SnapshotList } from '@/features/saved-items/components/snapshot-list'
 import { SnapshotDetails } from '@/features/saved-items/components/snapshot-view'
 import { Watchlist } from '@/features/saved-items/components/watchlist'
 import { getItem } from '@/lib/game-data'
+import { usePriceBook } from '@/stores/price-book'
 import { useSnapshots, useWatchlist } from '@/stores/saved-items'
 import type { Item } from '@/types/game'
 import type { Snapshot } from '@/types/saved'
+
+const SEARCHABLE_FROM = 6
 
 export function WatchlistRoute({
   serverId,
@@ -30,6 +33,7 @@ export function WatchlistRoute({
   calculatorHref: string
 }) {
   const { entries, unwatch } = useWatchlist(serverId)
+  const { book } = usePriceBook(serverId)
   const [params, setParams] = useSearchParams()
   const query = params.get('q') ?? ''
   const filtered = entries.filter(({ itemId }) =>
@@ -45,27 +49,28 @@ export function WatchlistRoute({
           Watchlist{' '}
           <span className="text-muted-foreground">({entries.length})</span>
         </h1>
-        <span className="text-muted-foreground text-sm">
-          {SERVERS.find((server) => server.id === serverId)?.name}
-        </span>
       </header>
       {entries.length > 0 ? (
         <>
-          <Input
-            type="search"
-            aria-label="Search watchlist"
-            placeholder="Search watched items"
-            value={query}
-            onChange={(event) => {
-              const next = new URLSearchParams(params)
-              if (event.target.value) next.set('q', event.target.value)
-              else next.delete('q')
-              setParams(next, { replace: true })
-            }}
-          />
+          {/* A list you can read at a glance does not need to be searched. */}
+          {entries.length > SEARCHABLE_FROM && (
+            <Input
+              type="search"
+              aria-label="Search watchlist"
+              placeholder="Search watched items"
+              value={query}
+              onChange={(event) => {
+                const next = new URLSearchParams(params)
+                if (event.target.value) next.set('q', event.target.value)
+                else next.delete('q')
+                setParams(next, { replace: true })
+              }}
+            />
+          )}
           {filtered.length ? (
             <Watchlist
               entries={filtered}
+              book={book}
               onSelect={onSelectItem}
               onRemove={unwatch}
             />
@@ -137,9 +142,6 @@ export function SnapshotsRoute({
           Snapshots{' '}
           <span className="text-muted-foreground">({snapshots.length})</span>
         </h1>
-        <span className="text-muted-foreground text-sm">
-          {SERVERS.find((server) => server.id === serverId)?.name}
-        </span>
       </header>
       <div className="flex flex-wrap items-center gap-3">
         <Input

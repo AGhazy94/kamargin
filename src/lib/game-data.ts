@@ -43,7 +43,21 @@ const craftableItems = [...itemsById.values()]
   .filter((item) => item.recipe?.length && item.job !== undefined)
   .sort((a, b) => a.name.localeCompare(b.name))
 
+// Built once so a resource can answer "what am I for?" without scanning 13k recipes.
+const recipesByIngredient = new Map<number, Item[]>()
+for (const item of craftableItems) {
+  for (const { itemId } of item.recipe ?? []) {
+    const users = recipesByIngredient.get(itemId)
+    if (users) users.push(item)
+    else recipesByIngredient.set(itemId, [item])
+  }
+}
+
 export const GAME_DATA_VERSION = meta.gameVersion
+
+export function getRecipesUsing(ankamaId: number): readonly Item[] {
+  return recipesByIngredient.get(ankamaId) ?? []
+}
 
 export function getCraftableItems(): readonly Item[] {
   return craftableItems
