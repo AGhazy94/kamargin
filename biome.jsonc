@@ -43,8 +43,14 @@
     "actions": { "source": { "organizeImports": "on" } }
   },
 
-  // Unidirectional imports; matches strings, not paths. Why: AGENTS.md.
   "overrides": [
+    {
+      // Reusable wrapper: the caller supplies htmlFor, so this file cannot.
+      "includes": ["src/components/ui/label.tsx"],
+      "linter": { "rules": { "a11y": { "noLabelWithoutControl": "off" } } }
+    },
+
+    // Unidirectional imports; matches strings, not paths. Why: AGENTS.md.
     {
       "includes": ["src/features/**"],
       "linter": {

@@ -126,14 +126,18 @@ This applies to config files (`biome.jsonc`, `vite.config.ts`) exactly as it doe
 
 ## UI — shadcn/ui and the theme
 
-Components live in `src/components/ui/` (Radix base, `radix-nova` style, Lucide icons). Add more
-with `npx shadcn@latest add <name>`, then run `npm run check` — generated files use shadcn's own
-formatting, and Biome reformats them to this repo's.
+Components live in `src/components/ui/`, on **Base UI** (`base-nova` style, Lucide icons) — the
+shadcn default since July 2026. Not Radix: don't reintroduce `radix-ui`. Add components with
+`npx shadcn@latest add <name>`, then `npm run check` — generated files carry shadcn's formatting
+and Biome reformats them to this repo's.
 
 Those files are **yours to edit**, not vendored. They are linted and formatted like any other source.
 
-`cn` comes from `@/lib/utils` (a re-export of the `cn` package, which bundles clsx and
-tailwind-merge). There is no `@/utils/cn`.
+`cn` is imported from the `cn` package directly (`import { cn } from 'cn'`) — it bundles clsx and
+tailwind-merge. `@/lib/utils` re-exports it. There is no `@/utils/cn`.
+
+After swapping a UI dependency, Vite's pre-bundle cache goes stale and the page serves
+`504 (Outdated Optimize Dep)`. Restart the dev server; `rm -rf node_modules/.vite` if it persists.
 
 ### Theme
 
