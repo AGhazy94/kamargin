@@ -1,4 +1,10 @@
-import { CalculatorIcon, CameraIcon, CoinsIcon, StarIcon } from 'lucide-react'
+import {
+  CalculatorIcon,
+  CameraIcon,
+  CoinsIcon,
+  SparklesIcon,
+  StarIcon,
+} from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import {
   Link,
@@ -21,6 +27,7 @@ import { useServer } from '@/stores/server'
 import type { Item } from '@/types/game'
 import type { Snapshot } from '@/types/saved'
 import { HomeRoute } from './routes/home'
+import { RecommendationsRoute } from './routes/recommendations'
 import {
   SnapshotRoute,
   SnapshotsRoute,
@@ -44,9 +51,11 @@ export function AppRouter() {
   const title =
     location.pathname === '/'
       ? 'Calculator'
-      : location.pathname === '/watchlist'
-        ? 'Watchlist'
-        : 'Snapshots'
+      : location.pathname === '/recommendations'
+        ? 'Recommendations'
+        : location.pathname === '/watchlist'
+          ? 'Watchlist'
+          : 'Snapshots'
 
   function href(path: string, selectedItemId?: number | null) {
     const params = new URLSearchParams({ server: String(serverId) })
@@ -120,6 +129,12 @@ export function AppRouter() {
       to: href('/', location.pathname === '/' ? itemId : lastItemId),
     },
     {
+      path: '/recommendations',
+      label: 'Crafts',
+      icon: SparklesIcon,
+      to: href('/recommendations'),
+    },
+    {
       path: '/watchlist',
       label: 'Watchlist',
       icon: StarIcon,
@@ -154,7 +169,9 @@ export function AppRouter() {
         </Link>
       }
       mainRef={mainRef}
-      scrollable={location.pathname !== '/'}
+      scrollable={
+        location.pathname !== '/' && location.pathname !== '/recommendations'
+      }
       serverControl={
         <ServerSelect
           value={serverId}
@@ -185,7 +202,7 @@ export function AppRouter() {
           }
         >
           <Icon className="size-4 shrink-0" />
-          {label}
+          <span className="truncate">{label}</span>
         </NavLink>
       ))}
     >
@@ -198,6 +215,17 @@ export function AppRouter() {
               serverId={serverId}
               itemId={itemId}
               onItemChange={openItem}
+            />
+          }
+        />
+        <Route
+          path="/recommendations"
+          element={
+            <RecommendationsRoute
+              key={serverId}
+              serverId={serverId}
+              onOpenItem={openItem}
+              calculatorHref={href('/', lastItemId)}
             />
           }
         />
