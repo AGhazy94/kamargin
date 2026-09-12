@@ -4,7 +4,14 @@
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     // public/ is standalone SVG assets, not components: a11y rules misfire.
-    "includes": ["**", "!dist", "!.agents/skills", "!public"]
+    "includes": [
+      "**",
+      "!dist",
+      "!.agents/skills",
+      "!public",
+      // Generated bundle: formatting it would multiply its size.
+      "!src/assets/game-data"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -48,6 +55,18 @@
       // Reusable wrapper: the caller supplies htmlFor, so this file cannot.
       "includes": ["src/components/ui/label.tsx"],
       "linter": { "rules": { "a11y": { "noLabelWithoutControl": "off" } } }
+    },
+    {
+      // Addons decorate a focusable control; a fieldset would announce a form.
+      "includes": ["src/components/ui/input-group.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useSemanticElements": "off",
+            "useKeyWithClickEvents": "off"
+          }
+        }
+      }
     },
 
     // Unidirectional imports; matches strings, not paths. Why: AGENTS.md.
@@ -105,6 +124,27 @@
                   {
                     "group": ["../../**"],
                     "message": "Relative imports must not climb out of the module. Use the @/ alias, which the layer rules can see."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      // A test sits one folder below its subject: the climb is how it reaches it.
+      "includes": ["src/**/tests/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/app/**", "@/features/**"],
+                    "message": "A test crosses no layer its subject cannot cross. Reach the subject relatively."
                   }
                 ]
               }

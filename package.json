@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "generate:game-data": "node scripts/generate-game-data.mjs",
     "build": "tsc --noEmit && vite build",
     "lint": "biome lint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "format": "biome format --write .",
     "check": "biome check --write --unsafe .",
     "ci": "biome ci ."
@@ -17,6 +19,7 @@
     "@base-ui/react": "^1.8.0",
     "@fontsource-variable/geist": "^5.3.0",
     "class-variance-authority": "^0.7.1",
+    "cmdk": "^1.1.1",
     "cn": "^0.2.6",
     "lucide-react": "^1.45.0",
     "react": "^19.2.8",
@@ -33,6 +36,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "vitest": "^5.0.0"
   }
 }
