@@ -121,8 +121,9 @@ this time including paid and private options. **Nothing is for sale, at any pric
 | `haapi.ankama.com` | the real Ankama API — auth and launcher services only, partner-keyed, no market or item endpoints |
 
 No developer programme, no partner tier, no published pricing. Players asked for a public API on the
-official forum (*Création d'une API publique*, Dec 2024) and nothing followed. The CGU separately
-forbid unauthorised automated access to game data, which is what rules out reading the client.
+official forum (*Création d'une API publique*, Dec 2024) and nothing followed. The ToU separately
+forbid unauthorised automated access to game data, which is what rules out reading the client — see
+[Reading the client](#reading-the-client--prohibited-outright-ban-risk-method-dependent).
 
 ### Third parties — dead or local-only
 
@@ -140,14 +141,56 @@ forbid unauthorised automated access to game data, which is what rules out readi
 The pattern is uniform: every working tool obtains prices from the player's own client — manual
 entry or in-browser OCR — because there is nothing to query.
 
+### How the live-price sites actually work — surveyed 2026-09-13
+
+"Live prices" is never a feed. Every such site is one of three shapes:
+
+| Shape | Examples | Where the numbers come from |
+| ----- | -------- | --------------------------- |
+| Your own notebook, rendered | `geneka.net/scan`, `chacha-hub.com` | prices you entered or OCR'd yourself; dofusdude supplies item metadata, never prices |
+| Crowd of client-side collectors + backend | `laboubourse.com`, `docraft.dev`, `JustNao/DofusHelper`, `CodyAdam/tool__dofus-img-recogn` | MITM/packet readers or image-recognition miners running on many players' machines, aggregated server-side |
+| Item and recipe APIs | `api.dofusdu.de`, `api.dofusdb.fr` | no prices at all |
+
+The middle shape is the only one with real coverage, and it is
+[the prohibited collection method](#reading-the-client--prohibited-outright-ban-risk-method-dependent)
+— Docraft advertises itself as a MITM HDV bot, and La Boubourse's Discord alerts fire on an item
+being "disponible / moins cher / absent", which is per-listing state only a client read produces.
+Its coverage comes from the size of the crowd, not from cleverness in the collector.
+
+That shape also has a poor survival record: `vulbis.com` and `kamascope.fr` were both of it, and
+both are gone. The legitimate version is the same architecture with opt-in OCR-only collection —
+still a server, still the end of the offline constraint.
+
 ### What that leaves
 
 - **Manual entry / in-browser OCR** — legitimate, free, offline. OCR reads the HDV panel a player
   screenshots; it accelerates entry, it does not provide coverage.
-- **Packet or memory reading of the client** — the only route to the full market. Breaks the CGU and
-  risks a ban. Out of scope, permanently.
+- **Packet or memory reading of the client** — the only route to the full market, and prohibited
+  outright. Out of scope, permanently. See below.
 - **A crowd-sourced backend** — real coverage, but needs both a server and users, and it would end
   the offline architecture.
+
+### Reading the client — prohibited outright, ban risk method-dependent
+
+Ankama ToU, read 2026-09-13 at `account.ankama.com/en/tou`. Two claims that were previously stated
+as one; they carry different certainty.
+
+**Prohibited: no ambiguity.** Art. 5.2.6 names the method — you agree not to "spy on or intercept
+the communication protocols", not to use "data or protocol interceptors", and specifically not to
+"retrieve data via packet sniffing". Memory reading falls under 5.2.1 (reverse engineering).
+Art. 5.2.7 separately bars commercial use of the Clients, and 5.3.2 bars collecting information in
+the Games. Art. 10.1 lets Ankama restrict or terminate an account for any ToU breach, without
+notice, at its sole discretion.
+
+**Detected: depends on the method, and is not certain.** Art. 5.2.5 states the Clients "may contain
+features designed to detect the use of programs and tools that are not authorized" running
+alongside a Game. That reaches anything hooking the process, MITM-ing TLS or proxying the
+connection. Passive capture on the player's own NIC is not observable to the client — but Dofus 3
+traffic is not plaintext, so passive capture alone yields nothing usable, and every method that does
+work is in the detectable class.
+
+The decisive point is not the odds of a ban: a *published* tool built on this is a takedown and
+account-action target regardless of whether any individual's sniffing goes unnoticed.
 
 `api.dofusdb.fr/` now serves an **LPNC-IA 1.0** licence at its root: non-commercial use, with an
 explicit clause covering AI-generated derivatives. It post-dates
