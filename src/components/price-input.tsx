@@ -17,6 +17,8 @@ export function PriceInput({
   placeholder = '0',
   reference,
   className,
+  invalid = false,
+  describedBy,
   onBlur,
   onSubmit,
 }: {
@@ -31,6 +33,8 @@ export function PriceInput({
   /** Passing the prop reserves the trailing slot, so filling it later shifts nothing. */
   reference?: ReactNode
   className?: string
+  invalid?: boolean
+  describedBy?: string
 }) {
   const hasSlot = reference !== undefined
 
@@ -39,6 +43,8 @@ export function PriceInput({
       <Input
         id={id}
         aria-label={label}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
         inputMode="numeric"
         autoComplete="off"
         placeholder={placeholder}

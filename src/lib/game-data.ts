@@ -75,6 +75,10 @@ export function getItem(ankamaId: number): Item | undefined {
   return itemsById.get(ankamaId)
 }
 
+export function getItems(): readonly Item[] {
+  return [...itemsById.values()]
+}
+
 export function getItemTypes(): string[] {
   return itemTypes
 }

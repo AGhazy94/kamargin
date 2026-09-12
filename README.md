@@ -6,8 +6,8 @@
 
 **Know what a craft is worth before you make it.**
 
-A client-side market calculator for [Dofus](https://www.dofus.com). Type the prices you
-see at the marketplace and it costs out every recipe, ranks your profession by margin,
+A client-side market calculator for [Dofus](https://www.dofus.com). Type marketplace prices
+or import screenshots, and it costs out every recipe, ranks your profession by margin,
 and keeps a record of what a craft was worth when you checked.
 
 [**Open the app →**](https://aghazy94.github.io/kamargin/)
@@ -56,6 +56,29 @@ inputs it is missing, and offers to take them.
 
 > The figures in both screenshots come from made-up prices, not a real market.
 
+## Screenshot import
+
+Use **Import screenshots** in the header to browse for English-client market-dialog
+screenshots. Each image gets an editable review card with its source image, matched item,
+pack totals, average-price reference, and confidence warnings. Nothing is written before
+**Confirm**. **Confirm all** skips uncertain cards. Confirmation replaces that item's tiers
+on the server selected when the batch opened; **Undo** restores the previous prices and
+their timestamps until the sheet closes, unless a newer edit would be overwritten.
+
+Tesseract runs locally. Vendored worker, core, language data, and cache-worker assets total
+at most **8,131,466 bytes per browser before compression** on first use. Only one of the
+three core variants loads. Worker/core assets persist in CacheStorage and English data in
+IndexedDB; a fresh OCR worker works offline after the first successful import. Browsers
+can clear or evict that storage. This does not add offline navigation or an app-shell cache.
+
+The review-sheet milestone is complete. Page-wide drop/paste, manual crop controls,
+calculator checklist/row targets, and the examples strip remain deferred.
+
+After changing OCR dependencies, run `npm run generate:ocr-assets`; CI verifies the
+vendored bytes without downloading anything. Real word-list fixtures can be regenerated
+with `npm run capture:ocr-fixtures -- /absolute/path/to/screenshots`. Screenshot originals
+stay local; tests use captured word boxes and confidence, without loading WASM.
+
 ## Running it
 
 ```sh
@@ -82,8 +105,9 @@ React, TypeScript, Vite and Tailwind v4, laid out after
 [bulletproof-react](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md)
 with `shared → features → app` import boundaries enforced by Biome rather than convention.
 UI is shadcn/ui on Base UI. Recipe and item data is bundled ahead of
-time from [dofusdu.de](https://api.dofusdu.de) by `npm run generate:game-data`; the only request
-the running app makes is for item icons, and it renders without them.
+time from [dofusdu.de](https://api.dofusdu.de) by `npm run generate:game-data`. Item icons are
+the only third-party runtime requests, and the app renders without them. OCR assets load
+from the site's own origin only after an image is selected.
 
 Routing is hash-based, which is what lets a static host serve deep links and refreshes with
 no rewrite rules — and why the Pages deploy needs no SPA fallback.

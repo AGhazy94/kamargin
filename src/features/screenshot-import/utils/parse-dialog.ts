@@ -181,10 +181,25 @@ export function parseDialog(words: readonly Word[]): ParsedDialog {
   if (averagePrice !== undefined)
     parsed.averagePrice = field(averagePrice, averageWords)
 
+  const packLabel = packRow.find((word) => /^pack$/i.test(word.text))
+  const priceHeading = packRow.find((word) => /^price$/i.test(word.text))
+  if (!packLabel || !priceHeading) return parsed
+  const columnMidpoint = (packLabel.bbox.x1 + priceHeading.bbox.x0) / 2
+  const observedTiers = new Set<PackTier>()
   for (const row of rows) {
     const bounds = wordBounds(row)
     if (bounds.y0 <= packBounds.y1) continue
     const runs = integerRuns(row, height)
+    if (runs[0]) {
+      const possibleTier = integer(runs[0]) as PackTier | undefined
+      const leftBounds = wordBounds(runs[0])
+      if (
+        possibleTier !== undefined &&
+        PACK_TIERS.includes(possibleTier) &&
+        (leftBounds.x0 + leftBounds.x1) / 2 < columnMidpoint
+      )
+        observedTiers.add(possibleTier)
+    }
     if (runs.length !== 2) continue
     const [tierWords, priceWords] = runs
     const tier = integer(tierWords) as PackTier | undefined
@@ -204,5 +219,7 @@ export function parseDialog(words: readonly Word[]): ParsedDialog {
       continue
     parsed.tiers[tier] = field(packPrice, [...tierWords, ...priceWords])
   }
+  const missingTiers = [...observedTiers].filter((tier) => !parsed.tiers[tier])
+  if (missingTiers.length) parsed.missingTiers = missingTiers
   return parsed
 }

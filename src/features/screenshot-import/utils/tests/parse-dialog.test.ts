@@ -45,6 +45,38 @@ const originals = [
     3191,
     { 1: 3488, 10: 30996, 100: 349984 },
   ],
+  [
+    '10.00.23',
+    'Big Manger Philtre',
+    85,
+    'Paddock Catalyst',
+    5804,
+    { 1: 7389, 10: 69988, 100: 745990 },
+  ],
+  [
+    '10.00.31',
+    'Generation-4 Dragoturkey Optimakina',
+    69,
+    'Makina',
+    10462,
+    { 1: 10993, 10: 102996, 100: 999998 },
+  ],
+  [
+    '10.00.41',
+    'Lightning Thrower Philtre',
+    75,
+    'Paddock Catalyst',
+    1878,
+    { 1: 2189, 10: 20291, 100: 199992 },
+  ],
+  [
+    '10.01.31',
+    'Drinking Trough Philtre',
+    75,
+    'Paddock Catalyst',
+    3145,
+    { 1: 3790, 10: 35293, 100: 389000 },
+  ],
 ] as const
 
 describe('parseDialog', () => {

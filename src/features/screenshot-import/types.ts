@@ -1,4 +1,5 @@
 import type { Item, PackTier } from '@/types/game'
+import type { PackPrices } from '@/utils/pack-tiers'
 
 export const OCR_CONFIDENCE_THRESHOLD = 70
 
@@ -30,6 +31,7 @@ export type ParsedDialog = {
   type?: OcrField<string>
   averagePrice?: OcrField<number>
   tiers: Partial<Record<PackTier, OcrField<number>>>
+  missingTiers?: PackTier[]
 }
 
 export type ItemMatch = {
@@ -55,4 +57,11 @@ export type OcrJob = {
   error?: string
   reading?: OcrReading
   match?: ItemMatch
+}
+
+export type ReviewDraft = {
+  itemId?: number
+  itemReviewed: boolean
+  prices: PackPrices
+  reviewedTiers: PackTier[]
 }

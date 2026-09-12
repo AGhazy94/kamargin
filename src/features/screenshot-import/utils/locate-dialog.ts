@@ -63,13 +63,21 @@ export function locateDialog(
         word.bbox.y0 > pack.bbox.y1 &&
         word.bbox.y1 < pack.bbox.y1 + height * 40,
     )
-    const markers = [...numbers, ...tierWords].sort(
+    const buyWords = ordered.filter(
+      (word) =>
+        /^(?:buy|bu)$/i.test(word.text) &&
+        word.bbox.x0 > price.bbox.x1 &&
+        word.bbox.x1 < price.bbox.x1 + height * 12 &&
+        word.bbox.y0 > pack.bbox.y1 &&
+        word.bbox.y1 < pack.bbox.y1 + height * 40,
+    )
+    const markers = [...numbers, ...tierWords, ...buyWords].sort(
       (first, second) => first.bbox.y0 - second.bbox.y0,
     )
     const priceWords: Word[] = []
     let previousBottom = pack.bbox.y1
     for (const word of markers) {
-      if (word.bbox.y0 - previousBottom > height * 6) break
+      if (word.bbox.y0 - previousBottom > height * 8) break
       if (numbers.includes(word)) priceWords.push(word)
       previousBottom = Math.max(previousBottom, word.bbox.y1)
     }
@@ -97,7 +105,7 @@ export function locateDialog(
       const priceRight = Math.min(
         size.width,
         Math.ceil(
-          Math.max(...priceWords.map((word) => word.bbox.x1)) + height / 12,
+          Math.max(...priceWords.map((word) => word.bbox.x1)) + height / 3,
         ),
       )
       candidate.priceBand = {

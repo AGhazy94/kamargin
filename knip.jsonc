@@ -3,8 +3,7 @@
   "entry": [
     "src/index.css",
     "src/**/tests/*.test.{ts,tsx}",
-    "scripts/*.{js,mjs}",
-    "src/features/screenshot-import/utils/ocr.ts"
+    "scripts/*.{js,mjs}"
   ],
   "project": ["src/**/*.{ts,tsx,css}", "scripts/*.{js,mjs}"],
   "ignoreExportsUsedInFile": true,

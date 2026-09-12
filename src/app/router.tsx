@@ -34,6 +34,7 @@ import {
   SnapshotsRoute,
   WatchlistRoute,
 } from './routes/saved-items'
+import { ScreenshotImport } from './screenshot-import'
 
 export function AppRouter() {
   const location = useLocation()
@@ -183,19 +184,22 @@ export function AppRouter() {
             : 'page'
       }
       serverControl={
-        <ServerSelect
-          value={serverId}
-          onValueChange={(nextServerId) => {
-            const next = new URLSearchParams(searchParams)
-            next.set('server', String(nextServerId))
-            navigate({
-              pathname: location.pathname.startsWith('/snapshots/')
-                ? '/snapshots'
-                : location.pathname,
-              search: next.toString(),
-            })
-          }}
-        />
+        <>
+          <ScreenshotImport serverId={serverId} />
+          <ServerSelect
+            value={serverId}
+            onValueChange={(nextServerId) => {
+              const next = new URLSearchParams(searchParams)
+              next.set('server', String(nextServerId))
+              navigate({
+                pathname: location.pathname.startsWith('/snapshots/')
+                  ? '/snapshots'
+                  : location.pathname,
+                search: next.toString(),
+              })
+            }}
+          />
+        </>
       }
       nav={destinations.map(({ path, label, icon: Icon, to }) => (
         <NavLink

@@ -187,6 +187,41 @@ export function restorePackPrices(
   writeStored(key(serverId), book)
 }
 
+export function restorePriceEntry(
+  serverId: number,
+  itemId: number,
+  previous: PriceEntry | undefined,
+  expected: PriceEntry,
+) {
+  const book = readPriceBook(serverId)
+  const current = book[itemId]
+  if (
+    previous &&
+    (previous.serverId !== serverId || previous.itemId !== itemId)
+  )
+    return false
+  if (
+    !current ||
+    current.serverId !== serverId ||
+    expected.serverId !== serverId ||
+    expected.itemId !== itemId
+  )
+    return false
+  if (
+    PACK_TIERS.some(
+      (tier) =>
+        current.tiers[tier]?.packPrice !== expected.tiers[tier]?.packPrice ||
+        current.tiers[tier]?.capturedAt !== expected.tiers[tier]?.capturedAt,
+    )
+  )
+    return false
+  const next = { ...book }
+  if (previous) next[itemId] = previous
+  else delete next[itemId]
+  writeStored(key(serverId), next)
+  return true
+}
+
 export function usePriceBook(serverId: number) {
   const [book] = useLocalStorage(key(serverId), EMPTY_BOOK)
 

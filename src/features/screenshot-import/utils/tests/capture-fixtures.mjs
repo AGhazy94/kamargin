@@ -67,11 +67,20 @@ function captureRegions(words, width, height) {
       word.bbox.y1 < pack.bbox.y1 + lineHeight * 28,
   )
   if (!priceWords.length) return null
+  const buyWords = words.filter(
+    (word) =>
+      /^(?:buy|bu)$/i.test(word.text) &&
+      word.bbox.x0 > price.bbox.x1 &&
+      word.bbox.x1 < price.bbox.x1 + lineHeight * 12 &&
+      word.bbox.y0 > pack.bbox.y1 &&
+      word.bbox.y1 < pack.bbox.y1 + lineHeight * 28,
+  )
   const left = Math.max(0, pack.bbox.x0 - lineHeight * 5)
   const top = Math.max(0, average.bbox.y0 - lineHeight * 5)
   const bottom = Math.min(
     height,
-    Math.max(...priceWords.map((word) => word.bbox.y1)) + lineHeight,
+    Math.max(...[...priceWords, ...buyWords].map((word) => word.bbox.y1)) +
+      lineHeight,
   )
   const priceTop = pack.bbox.y1 + 4
   return {
@@ -85,7 +94,9 @@ function captureRegions(words, width, height) {
       left: pack.bbox.x0,
       top: priceTop,
       width:
-        Math.max(...priceWords.map((word) => word.bbox.x1)) + 2 - pack.bbox.x0,
+        Math.max(...priceWords.map((word) => word.bbox.x1)) +
+        lineHeight / 3 -
+        pack.bbox.x0,
       height: bottom - priceTop,
     },
   }
