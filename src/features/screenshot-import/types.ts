@@ -37,3 +37,22 @@ export type ItemMatch = {
   confident: boolean
   candidates: { item: Item; distance: number; score: number }[]
 }
+
+export type OcrReading = {
+  parsed: ParsedDialog
+  location: DialogLocation
+  width: number
+  height: number
+}
+
+export type OcrJob = {
+  id: string
+  file: File
+  sourceUrl: string
+  status: 'queued' | 'reading' | 'ready' | 'error' | 'cancelled'
+  progress: number
+  phase: string
+  error?: string
+  reading?: OcrReading
+  match?: ItemMatch
+}
