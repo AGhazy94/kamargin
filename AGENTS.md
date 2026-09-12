@@ -39,6 +39,19 @@ If serena is missing: `claude mcp add serena -- uvx --from git+https://github.co
 Never edit source through the Bash tool: no `sed -i`, no heredoc rewrites, no throwaway scripts.
 No hook catches this — a mis-aimed shell edit exits `0` and renders no diff.
 
+## Tests — a `tests/` subfolder inside the folder under test
+
+Vitest. There is no global suite: a test belongs to the folder it exercises.
+
+- **Every folder that has tests owns a `tests/` subfolder.** Tests never sit beside the code they
+  exercise — a reader scanning a folder sees the code, not the scaffolding.
+- **Everything test-only lives in there**: specs, fixtures, mocks, helpers.
+- **Production code never imports from a `tests/` folder.** The dependency runs one way.
+- **A test reaches its subject and its helpers relatively.** Layer boundaries bind a test exactly as
+  they bind its subject; the override in [biome.jsonc](biome.jsonc) grants only the one-level climb
+  this layout forces.
+- `npm test` runs them once; `npx vitest` watches.
+
 ## Project structure — bulletproof-react
 
 Layout follows [bulletproof-react](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md).
@@ -59,7 +72,6 @@ src/
 ├── hooks/        # shared hooks
 ├── lib/          # preconfigured third-party libraries
 ├── stores/       # global state
-├── testing/      # test utils and mocks
 ├── types/        # shared types
 └── utils/        # shared utilities
 ```
@@ -168,8 +180,10 @@ don't add one.
 |                     |                                        |
 | ------------------- | -------------------------------------- |
 | `npm run dev`       | Vite dev server on :5173               |
+| `npm run generate:game-data` | refetch + retrim the bundled game data |
 | `npm run build`     | typecheck + production build           |
 | `npm run typecheck` | types only                             |
+| `npm test`          | Vitest, single run                     |
 | `npm run lint`      | Biome lint (incl. import boundaries)   |
 | `npm run format`    | Biome format, write                    |
 | `npm run check`     | format + lint + import sort, write     |
