@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { PackTier } from '@/types/game'
-import type { CraftProfit } from '../../types'
+import type { CraftProfit } from '@/types/profit'
 import { calculateCraftProfit, getTier, isThinMargin } from '../profit'
 import {
   HOGMEISER_BOOTS_INGREDIENTS as BOOTS,

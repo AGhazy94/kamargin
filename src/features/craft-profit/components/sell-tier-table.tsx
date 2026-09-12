@@ -1,5 +1,5 @@
 import { ArrowUpIcon } from 'lucide-react'
-
+import { PriceInput } from '@/components/price-input'
 import {
   Tooltip,
   TooltipContent,
@@ -7,9 +7,8 @@ import {
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import type { PackTier } from '@/types/game'
+import type { CraftProfit } from '@/types/profit'
 import { formatCompactKamas, formatKamas, formatTier } from '@/utils/format'
-import type { CraftProfit } from '../types'
-import { PriceInput } from './price-input'
 
 const COLUMNS = 'grid grid-cols-[2.5rem_minmax(0,1fr)_4.25rem_4.25rem] gap-2'
 

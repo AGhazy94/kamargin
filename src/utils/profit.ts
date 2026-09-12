@@ -1,11 +1,11 @@
 import type { PackTier } from '@/types/game'
-import { PACK_TIERS } from '@/utils/pack-tiers'
 import type {
   CraftProfit,
   ProfitInputs,
   ProfitLine,
   TierProfit,
-} from '../types'
+} from '@/types/profit'
+import { PACK_TIERS } from '@/utils/pack-tiers'
 
 export const MARKETPLACE_FEE_RATE = 0.02
 

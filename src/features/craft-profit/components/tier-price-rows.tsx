@@ -1,10 +1,9 @@
 import { CheckIcon } from 'lucide-react'
-
+import { PriceInput } from '@/components/price-input'
 import { isStale, type PriceEntry } from '@/stores/price-book'
 import type { PackTier } from '@/types/game'
 import { formatAge, formatKamas, formatTier } from '@/utils/format'
 import { cheapestTier, PACK_TIERS, type PackPrices } from '@/utils/pack-tiers'
-import { PriceInput } from './price-input'
 
 export function TierPriceRows({
   name,

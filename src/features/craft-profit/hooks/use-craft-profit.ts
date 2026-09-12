@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 
 import type { Item } from '@/types/game'
+import type { CraftProfit } from '@/types/profit'
 import { cheapestTier, pricedTierCount } from '@/utils/pack-tiers'
-import type { CraftProfit } from '../types'
-import { calculateCraftProfit } from '../utils/profit'
+import { calculateCraftProfit } from '@/utils/profit'
 import type { PackPriceMap } from './use-pack-prices'
 
 export type CraftProfitStatus =

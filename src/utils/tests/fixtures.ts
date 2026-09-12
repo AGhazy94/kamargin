@@ -1,4 +1,4 @@
-import type { PricedIngredient } from '../../types'
+import type { PricedIngredient } from '@/types/profit'
 
 // Hogmeiser's Boots (ankama_id 910) at plausible Kourial prices.
 export const HOGMEISER_BOOTS_INGREDIENTS: readonly PricedIngredient[] = [

@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
+import type { CraftProfit } from '@/types/profit'
 import { formatKamas, formatTier } from '@/utils/format'
-import type { CraftProfit } from '../types'
-import { getTier } from '../utils/profit'
+import { getTier } from '@/utils/profit'
 
 export function ProfitSummaryBar({ profit }: { profit: CraftProfit }) {
   const best = getTier(profit, profit.bestTier)

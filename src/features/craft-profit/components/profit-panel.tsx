@@ -3,9 +3,9 @@ import type { ReactNode } from 'react'
 import { ScrollPanel } from '@/components/scroll-panel'
 import { Separator } from '@/components/ui/separator'
 import type { PackTier } from '@/types/game'
+import type { CraftProfit } from '@/types/profit'
 import { formatKamas, formatMargin } from '@/utils/format'
-import type { CraftProfit } from '../types'
-import { getTier, isThinMargin } from '../utils/profit'
+import { getTier, isThinMargin } from '@/utils/profit'
 import { SellTierTable } from './sell-tier-table'
 
 function Figure({ label, children }: { label: string; children: ReactNode }) {

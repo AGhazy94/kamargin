@@ -1,15 +1,14 @@
 import { ChevronRightIcon } from 'lucide-react'
 import { useId } from 'react'
-
+import { PriceInput } from '@/components/price-input'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { getItem } from '@/lib/game-data'
 import { cn } from '@/lib/utils'
 import { isStale, type PriceEntry } from '@/stores/price-book'
 import type { PackTier } from '@/types/game'
+import type { ProfitLine } from '@/types/profit'
 import { formatAge, formatKamas, formatTier } from '@/utils/format'
 import type { PackPrices } from '@/utils/pack-tiers'
-import type { ProfitLine } from '../types'
-import { PriceInput } from './price-input'
 import { TierPriceRows } from './tier-price-rows'
 
 export function IngredientPriceRow({

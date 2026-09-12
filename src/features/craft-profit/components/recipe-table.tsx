@@ -9,8 +9,8 @@ import {
 } from '@/components/ui/table'
 import type { PriceBook } from '@/stores/price-book'
 import type { PackTier } from '@/types/game'
+import type { CraftProfit } from '@/types/profit'
 import type { PackPriceMap } from '../hooks/use-pack-prices'
-import type { CraftProfit } from '../types'
 import { IngredientPriceRow } from './ingredient-price-row'
 
 export function RecipeTable({

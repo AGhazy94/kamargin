@@ -12,9 +12,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { Item } from '@/types/game'
+import type { CraftProfit } from '@/types/profit'
 import type { NewSnapshot, SnapshotFigures } from '@/types/saved'
 import type { PackPriceMap } from '../hooks/use-pack-prices'
-import type { CraftProfit } from '../types'
 
 const LABEL_INPUT_ID = 'snapshot-label'
 
