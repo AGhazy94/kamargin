@@ -1,10 +1,9 @@
 {
-  // Local copy, not the hosted URL: works offline and cannot drift from the
-  // installed Biome version.
+  // Local copy: cannot drift from the installed version.
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
-    // public/ holds standalone SVG assets, not components: a11y rules do not apply.
+    // public/ is standalone SVG assets, not components: a11y rules misfire.
     "includes": ["**", "!dist", "!.agents/skills", "!public"]
   },
   "formatter": {
@@ -27,8 +26,7 @@
     "rules": {
       "preset": "recommended",
       "nursery": {
-        // Tailwind class sorting. Still nursery and its fix is unsafe, so only
-        // `biome check --write --unsafe` (npm run check) applies it.
+        // Unsafe fix, so only `npm run check` (--unsafe) applies it.
         "useSortedClasses": {
           "level": "warn",
           "options": { "functions": ["cn", "clsx"] }
@@ -41,10 +39,7 @@
     "actions": { "source": { "organizeImports": "on" } }
   },
 
-  // Unidirectional codebase: shared -> features -> app. See AGENTS.md.
-  // noRestrictedImports matches the import STRING, not a resolved path, so every
-  // rule below reasons about `@/…` specifiers — hence the `../../**` guard, which
-  // stops a relative climb from escaping the layer check.
+  // Unidirectional imports; matches strings, not paths. Why: AGENTS.md.
   "overrides": [
     {
       "includes": ["src/features/**"],
@@ -59,9 +54,7 @@
                     "group": ["@/app/**"],
                     "message": "A feature must not import from the app layer. Compose features in src/app instead."
                   },
-                  // Deliberately no self-exception: banning @/features/** outright
-                  // makes cross-feature isolation enforceable without a config
-                  // entry per feature. A feature reaches its own files relatively.
+                  // No self-exception: that is what avoids a config entry per feature.
                   {
                     "group": ["@/features/**"],
                     "message": "No @/features/* imports inside a feature: another feature is off limits (compose them in src/app), and your own feature is reached with a relative path."
@@ -78,7 +71,7 @@
       }
     },
     {
-      // The shared layer: importable by everything, importing nothing above it.
+      // Shared layer: imported by everything, imports nothing above it.
       "includes": [
         "src/components/**",
         "src/config/**",

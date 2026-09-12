@@ -96,12 +96,31 @@ Compose features in `src/app/`, don't wire them to each other.
   split exists to give the config file Node types, which this project doesn't need.
 - **Styling**: Tailwind utility classes. No CSS modules, no styled-components. Tailwind v4 is
   configured in CSS (`src/index.css`) — there is no `tailwind.config.js`.
-- **Comments**: only when the code can't speak for itself, one line, the _why_ not the _what_.
+- **Comments**: see [Comments — one line, the why](#comments--one-line-the-why). Non-negotiable.
 - **Formatting**: `npm run check`. Biome formats, sorts imports and sorts Tailwind classes; don't
   hand-order. Class sorting is Biome's `useSortedClasses`, still a nursery rule with an *unsafe*
   fix — `npm run check` passes `--unsafe` so it actually applies.
 - **Vendored content**: `.agents/skills/` is upstream-verbatim and excluded in `biome.jsonc`.
   Re-sync it, never edit it in place.
+
+## Comments — one line, the why
+
+Default to **no comment**. Code that needs prose usually needs renaming instead.
+
+When one genuinely earns its place — a non-obvious constraint, a rule that looks wrong until you
+know why — write **one line stating the _why_**. Never the _what_.
+
+Hard limits:
+
+- **One line.** If it takes two, cut it until it fits, or move the reasoning to AGENTS.md and
+  reference it. A wrapped sentence is two lines.
+- **No restating the code.** `// Local copy: cannot drift from the installed version.` — not
+  `// Points $schema at the copy of the schema inside node_modules.`
+- **No section banners**, no `/* --- Setup --- */`, no decorative dividers.
+- **No changelog comments.** Not `// Replaced ESLint here` — git records that.
+- **No TODO without an owner or issue.** A bare `// TODO: fix` is noise.
+
+This applies to config files (`biome.jsonc`, `vite.config.ts`) exactly as it does to `src/`.
 
 ## Tooling
 

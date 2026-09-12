@@ -15,6 +15,8 @@ Always on, non-negotiable, read them in full:
 - Editing — Edit/Write by default. Never edit source through the Bash tool: no `sed -i`, no heredoc
   rewrites, no throwaway scripts. Unlike the two above, no hook catches this — a mis-aimed shell
   edit exits `0` and renders no diff.
+- Comments — [one line, the _why_](../../AGENTS.md#comments--one-line-the-why). Default to none.
+  Never two lines, never restating the code, never a section banner. Config files included.
 
 Claude Code specifics: symbol _navigation_ goes through the **serena MCP (LSP) server** —
 `find_symbol`, `find_referencing_symbols`, `find_declaration`, `find_implementations`, `list_dir`.
