@@ -1,5 +1,7 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.13/schema.json",
+  // Local copy, not the hosted URL: works offline and cannot drift from the
+  // installed Biome version.
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     // public/ holds standalone SVG assets, not components: a11y rules do not apply.
