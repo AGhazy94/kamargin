@@ -74,7 +74,7 @@ and no runtime fetching. Add them if that changes.
   only from each other — never from `features/` or `app/`.
 
 All three directions are enforced by `noRestrictedImports`, scoped by per-layer `overrides` in
-[biome.json](biome.json). **No config change is needed when you add a feature.**
+[biome.jsonc](biome.jsonc). **No config change is needed when you add a feature.**
 
 Biome matches the **import string**, not a resolved path, which shapes two of the rules:
 
@@ -100,7 +100,7 @@ Compose features in `src/app/`, don't wire them to each other.
 - **Formatting**: `npm run check`. Biome formats, sorts imports and sorts Tailwind classes; don't
   hand-order. Class sorting is Biome's `useSortedClasses`, still a nursery rule with an *unsafe*
   fix — `npm run check` passes `--unsafe` so it actually applies.
-- **Vendored content**: `.agents/skills/` is upstream-verbatim and excluded in `biome.json`.
+- **Vendored content**: `.agents/skills/` is upstream-verbatim and excluded in `biome.jsonc`.
   Re-sync it, never edit it in place.
 
 ## Tooling

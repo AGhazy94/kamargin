@@ -2,6 +2,7 @@
   "$schema": "https://biomejs.dev/schemas/2.5.13/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
+    // public/ holds standalone SVG assets, not components: a11y rules do not apply.
     "includes": ["**", "!dist", "!.agents/skills", "!public"]
   },
   "formatter": {
@@ -24,6 +25,8 @@
     "rules": {
       "preset": "recommended",
       "nursery": {
+        // Tailwind class sorting. Still nursery and its fix is unsafe, so only
+        // `biome check --write --unsafe` (npm run check) applies it.
         "useSortedClasses": {
           "level": "warn",
           "options": { "functions": ["cn", "clsx"] }
@@ -35,6 +38,11 @@
     "enabled": true,
     "actions": { "source": { "organizeImports": "on" } }
   },
+
+  // Unidirectional codebase: shared -> features -> app. See AGENTS.md.
+  // noRestrictedImports matches the import STRING, not a resolved path, so every
+  // rule below reasons about `@/…` specifiers — hence the `../../**` guard, which
+  // stops a relative climb from escaping the layer check.
   "overrides": [
     {
       "includes": ["src/features/**"],
@@ -49,6 +57,9 @@
                     "group": ["@/app/**"],
                     "message": "A feature must not import from the app layer. Compose features in src/app instead."
                   },
+                  // Deliberately no self-exception: banning @/features/** outright
+                  // makes cross-feature isolation enforceable without a config
+                  // entry per feature. A feature reaches its own files relatively.
                   {
                     "group": ["@/features/**"],
                     "message": "No @/features/* imports inside a feature: another feature is off limits (compose them in src/app), and your own feature is reached with a relative path."
@@ -65,6 +76,7 @@
       }
     },
     {
+      // The shared layer: importable by everything, importing nothing above it.
       "includes": [
         "src/components/**",
         "src/config/**",
