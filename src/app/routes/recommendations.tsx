@@ -13,7 +13,7 @@ export function RecommendationsRoute({
 }) {
   return (
     <section
-      className="flex flex-col gap-6 lg:h-full lg:min-h-0"
+      className="flex h-full min-h-0 flex-col gap-6"
       aria-labelledby="recommendations-title"
     >
       <header className="flex shrink-0 items-baseline justify-between gap-4">

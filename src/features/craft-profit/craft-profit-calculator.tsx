@@ -75,6 +75,7 @@ export function CraftProfitCalculator({
         ) : (
           <ScrollPanel
             key={item.id}
+            scroll="lg"
             header={
               <div className="flex flex-col gap-6">
                 {summary}

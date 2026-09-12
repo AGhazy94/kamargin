@@ -8,7 +8,7 @@ export function AppShell({
   nav = null,
   brand = 'Dofus Market',
   serverControl = <ServerSelect />,
-  scrollable = false,
+  scroll = 'panel-lg',
   mainRef,
   title = 'Calculator',
   children,
@@ -16,7 +16,8 @@ export function AppShell({
   nav?: ReactNode
   brand?: ReactNode
   serverControl?: ReactNode
-  scrollable?: boolean
+  /** Who owns the scrollbar: the page, a panel inside it, or a panel from `lg` up. */
+  scroll?: 'page' | 'panel' | 'panel-lg'
   mainRef?: Ref<HTMLElement>
   title?: string
   children: ReactNode
@@ -46,7 +47,8 @@ export function AppShell({
         aria-label={title}
         className={cn(
           'mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto px-4 py-8 outline-none sm:px-8',
-          !scrollable && 'lg:overflow-hidden',
+          scroll === 'panel' && 'overflow-hidden',
+          scroll === 'panel-lg' && 'lg:overflow-hidden',
         )}
       >
         {children}

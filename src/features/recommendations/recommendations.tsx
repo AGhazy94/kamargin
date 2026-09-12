@@ -64,6 +64,7 @@ export function Recommendations({
     <>
       <ScrollPanel
         className="max-w-5xl"
+        scrollResetKey={`${filters.jobId}:${filters.minLevel}:${filters.maxLevel}:${filters.hideIncomplete}`}
         header={<FilterRow filters={filters} onChange={update} />}
         footer={
           <p className="text-muted-foreground text-sm tabular-nums">

@@ -34,7 +34,7 @@ export function ProfitPanel({
   const best = getTier(profit, profit.bestTier)
 
   return (
-    <ScrollPanel header={header} className="lg:min-h-0 lg:flex-1">
+    <ScrollPanel scroll="lg" header={header} className="lg:min-h-0 lg:flex-1">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-3">
           <Figure label="Craft cost">

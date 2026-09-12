@@ -169,8 +169,12 @@ export function AppRouter() {
         </Link>
       }
       mainRef={mainRef}
-      scrollable={
-        location.pathname !== '/' && location.pathname !== '/recommendations'
+      scroll={
+        location.pathname === '/recommendations'
+          ? 'panel'
+          : location.pathname === '/'
+            ? 'panel-lg'
+            : 'page'
       }
       serverControl={
         <ServerSelect

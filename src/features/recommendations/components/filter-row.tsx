@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -14,9 +16,54 @@ import { LEVEL_RANGE } from '../utils/rank'
 const ALL_JOBS = 'all'
 
 function clampLevel(raw: string, fallback: number): number {
-  const value = Number(raw.replace(/[^\d]/g, ''))
-  if (!Number.isFinite(value) || value === 0) return fallback
+  const value = Number(raw)
+  if (raw === '' || !Number.isFinite(value) || value === 0) return fallback
   return Math.min(LEVEL_RANGE.max, Math.max(LEVEL_RANGE.min, value))
+}
+
+/** Clamping mid-keystroke rewrites what is being typed, so the range is only bound on commit. */
+function LevelInput({
+  id,
+  label,
+  value,
+  fallback,
+  onCommit,
+}: {
+  id: string
+  label: string
+  value: number
+  fallback: number
+  onCommit: (level: number) => void
+}) {
+  const [draft, setDraft] = useState(String(value))
+  const [committed, setCommitted] = useState(value)
+
+  if (committed !== value) {
+    setCommitted(value)
+    setDraft(String(value))
+  }
+
+  function commit() {
+    const level = clampLevel(draft, fallback)
+    setCommitted(level)
+    setDraft(String(level))
+    onCommit(level)
+  }
+
+  return (
+    <Input
+      id={id}
+      inputMode="numeric"
+      aria-label={label}
+      className="h-10 text-right tabular-nums"
+      value={draft}
+      onChange={(event) => setDraft(event.target.value.replace(/[^\d]/g, ''))}
+      onBlur={commit}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') commit()
+      }}
+    />
+  )
 }
 
 export function FilterRow({
@@ -71,19 +118,17 @@ export function FilterRow({
           >
             Level
           </Label>
-          <Input
+          <LevelInput
             id="craft-level-min"
-            inputMode="numeric"
-            aria-label="Minimum craft level"
-            className="h-10 text-right tabular-nums"
+            label="Minimum craft level"
             value={filters.minLevel}
-            onChange={(event) => {
-              const minLevel = clampLevel(event.target.value, LEVEL_RANGE.min)
+            fallback={LEVEL_RANGE.min}
+            onCommit={(minLevel) =>
               onChange({
                 minLevel,
                 maxLevel: Math.max(minLevel, filters.maxLevel),
               })
-            }}
+            }
           />
         </div>
         <span className="pb-2.5 text-muted-foreground text-sm">to</span>
@@ -91,19 +136,17 @@ export function FilterRow({
           <Label htmlFor="craft-level-max" className="sr-only">
             Maximum craft level
           </Label>
-          <Input
+          <LevelInput
             id="craft-level-max"
-            inputMode="numeric"
-            aria-label="Maximum craft level"
-            className="h-10 text-right tabular-nums"
+            label="Maximum craft level"
             value={filters.maxLevel}
-            onChange={(event) => {
-              const maxLevel = clampLevel(event.target.value, LEVEL_RANGE.max)
+            fallback={LEVEL_RANGE.max}
+            onCommit={(maxLevel) =>
               onChange({
                 maxLevel,
                 minLevel: Math.min(maxLevel, filters.minLevel),
               })
-            }}
+            }
           />
         </div>
       </div>
