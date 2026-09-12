@@ -2,7 +2,7 @@
 
 **Status:** specified, not built. Design session pending.
 
-The first and, for now, only feature. Answers one question: *for this item, on my server, does
+The first feature, and likely not the last. Answers one question: *for this item, on my server, does
 crafting it and selling it on the marketplace make kamas?*
 
 Game mechanics and data sources it rests on: [../research.md](../research.md).
