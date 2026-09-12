@@ -144,6 +144,10 @@ lamplight in dark, kama gold as `--primary`, Dofus-egg hues for `--chart-*`. Dar
 Beyond the shadcn set, four market tokens: `--kama` / `--kama-foreground` for currency, and
 `--gain` / `--loss` for trade outcomes (use these, never bare green/red).
 
+`--accent` is **not** a brand colour — shadcn uses it for hover, focus and selected surfaces
+(ghost buttons, highlighted menu items, hovered rows). Keep it a subtle lift off `--background`.
+Brand colour goes in `--primary`; a distinct hue goes in `--chart-*` or a new named token.
+
 Change a colour in **one place**: the `:root` and `.dark` blocks. Every token is `oklch`, so keep
 new ones in `oklch` too — mixing colour spaces makes lightness ramps inconsistent. Any new token
 needs a `--color-*` mapping in the `@theme inline` block before a utility class can see it.
