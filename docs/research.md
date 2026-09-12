@@ -107,6 +107,53 @@ profit figure.
 is the correct design, not a fallback. (`dofus-value` advertises a public API but is unofficial and
 would break the offline constraint.)
 
+## Market price sources — re-verified 2026-09-12
+
+Re-probed before specifying [features/craft-recommendations-v3.md](features/craft-recommendations-v3.md),
+this time including paid and private options. **Nothing is for sale, at any price.**
+
+### Ankama — no official route
+
+| Probe | Result |
+| ----- | ------ |
+| `developers.ankama.com`, `api.dofus.com` | do not resolve |
+| `api.ankama.com` | corporate site; `/docs` 404 |
+| `haapi.ankama.com` | the real Ankama API — auth and launcher services only, partner-keyed, no market or item endpoints |
+
+No developer programme, no partner tier, no published pricing. Players asked for a public API on the
+official forum (*Création d'une API publique*, Dec 2024) and nothing followed. The CGU separately
+forbid unauthorised automated access to game data, which is what rules out reading the client.
+
+### Third parties — dead or local-only
+
+| Source | State |
+| ------ | ----- |
+| `vulbis.com` | **gone** — 302s to a parked spam domain |
+| `kamascope.fr` | **abandoned** — TLS certificate expired 2026-08-24, page is an empty SPA shell |
+| `chacha-hub.com` | alive, free, **no API** — OCR of pasted HDV screenshots via Tesseract.js, localStorage only |
+| `geneka.net` | alive, free, **no API** — user-entered prices shared between its own tools, Ko-fi donations |
+| `dofocus.fr` | alive, runes only, user-entered, no API |
+| `brifus.fr` | HTTP 520 |
+| `Lopinsley/dofus-value` | README-stage repo, no working collector |
+| `api.dofusdu.de`, `api.dofusdb.fr` | items and recipes, **zero price data** |
+
+The pattern is uniform: every working tool obtains prices from the player's own client — manual
+entry or in-browser OCR — because there is nothing to query.
+
+### What that leaves
+
+- **Manual entry / in-browser OCR** — legitimate, free, offline. OCR reads the HDV panel a player
+  screenshots; it accelerates entry, it does not provide coverage.
+- **Packet or memory reading of the client** — the only route to the full market. Breaks the CGU and
+  risks a ban. Out of scope, permanently.
+- **A crowd-sourced backend** — real coverage, but needs both a server and users, and it would end
+  the offline architecture.
+
+`api.dofusdb.fr/` now serves an **LPNC-IA 1.0** licence at its root: non-commercial use, with an
+explicit clause covering AI-generated derivatives. It post-dates
+[scripts/generate-game-data.mjs](../scripts/generate-game-data.mjs) and should be read before the
+next regeneration.
+
 ## Sources
 
 - [Dofus Wiki — Market](https://dofuswiki.fandom.com/wiki/Market)
