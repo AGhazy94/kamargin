@@ -197,7 +197,7 @@ export function AppRouter() {
   ]
 
   return (
-    <ScreenshotImportProvider serverId={serverId}>
+    <ScreenshotImportProvider serverId={serverId} onOpenItem={openItem}>
       <AppShell
         title={title}
         brand={

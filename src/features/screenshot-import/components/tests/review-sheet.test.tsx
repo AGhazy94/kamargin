@@ -60,7 +60,7 @@ function makeJob(time = '7.07.16', id = 'greedo'): OcrJob {
   }
 }
 
-function openSheet(onClose = vi.fn()) {
+function openSheet(onClose = vi.fn(), onOpenItem = vi.fn()) {
   return render(
     <StrictMode>
       <TooltipProvider>
@@ -68,6 +68,7 @@ function openSheet(onClose = vi.fn()) {
           serverId={355}
           initialImports={initialImports}
           onClose={onClose}
+          onOpenItem={onOpenItem}
         />
       </TooltipProvider>
     </StrictMode>,
@@ -228,6 +229,16 @@ describe('ReviewSheet', () => {
     expect(
       within(preview).getByRole('button', { name: 'Fit image' }),
     ).toBeTruthy()
+  })
+
+  it('opens the craft cost page from a matched item and from its receipt', () => {
+    const onOpenItem = vi.fn()
+    openSheet(vi.fn(), onOpenItem)
+    fireEvent.click(screen.getByRole('button', { name: 'Craft cost' }))
+    expect(onOpenItem).toHaveBeenCalledWith(greedo)
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Greedo Rum' }))
+    expect(onOpenItem).toHaveBeenCalledTimes(2)
   })
 
   it('discards or dismisses drafts without saving them', () => {

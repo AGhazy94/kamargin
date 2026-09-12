@@ -13,6 +13,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { SERVERS } from '@/config/servers'
 import { getItems } from '@/lib/game-data'
+import type { Item } from '@/types/game'
 
 import engine from '../assets/engine.json'
 import { useOcrQueue } from '../hooks/use-ocr-queue'
@@ -31,10 +32,12 @@ export function ReviewSheet({
   serverId,
   initialImports,
   onClose,
+  onOpenItem,
 }: {
   serverId: number
   initialImports: readonly ImportRequest[]
   onClose: () => void
+  onOpenItem: (item: Item) => void
 }) {
   const [items] = useState(getItems)
   const queue = useOcrQueue(items)
@@ -208,6 +211,7 @@ export function ReviewSheet({
                 onRemove={() => queue.remove(job.id)}
                 onCancel={() => queue.cancel(job.id)}
                 onRetry={() => queue.retry(job.id)}
+                onOpenItem={onOpenItem}
               />
             ))}
             {queue.jobs.length === 0 && (

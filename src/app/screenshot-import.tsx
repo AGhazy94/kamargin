@@ -29,6 +29,7 @@ import {
   PASTE_SHORTCUT,
 } from '@/features/screenshot-import/components/drop-surface'
 import type { ImportRequest } from '@/features/screenshot-import/types'
+import type { Item } from '@/types/game'
 
 const ReviewSheet = lazy(() =>
   import('@/features/screenshot-import/components/review-sheet').then(
@@ -47,9 +48,11 @@ export function useScreenshotImport() {
 
 export function ScreenshotImportProvider({
   serverId,
+  onOpenItem,
   children,
 }: {
   serverId: number
+  onOpenItem: (item: Item) => void
   children: ReactNode
 }) {
   const [session, setSession] = useState<{
@@ -119,6 +122,10 @@ export function ScreenshotImportProvider({
               serverId={session.serverId}
               initialImports={session.imports}
               onClose={close}
+              onOpenItem={(item) => {
+                close()
+                onOpenItem(item)
+              }}
             />
           </Suspense>
         </ErrorBoundary>

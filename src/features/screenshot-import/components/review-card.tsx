@@ -30,6 +30,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { getItem } from '@/lib/game-data'
+import type { Item } from '@/types/game'
 import { formatCompactKamas, formatKamas, formatTier } from '@/utils/format'
 import { cheapestTier, PACK_TIERS, pricedTierCount } from '@/utils/pack-tiers'
 
@@ -59,6 +60,7 @@ export function ReviewCard({
   onRemove,
   onCancel,
   onRetry,
+  onOpenItem,
 }: {
   job: OcrJob
   draft: ReviewDraft
@@ -71,6 +73,7 @@ export function ReviewCard({
   onRemove: () => void
   onCancel: () => void
   onRetry: () => void
+  onOpenItem: (item: Item) => void
 }) {
   const [enlarged, setEnlarged] = useState(false)
   const [zoomed, setZoomed] = useState(false)
@@ -115,7 +118,17 @@ export function ReviewCard({
       >
         <CheckIcon className="size-4 shrink-0 text-gain" aria-hidden />
         <div className="min-w-0 flex-1">
-          <span className="wrap-break-word mr-3 font-medium">{item?.name}</span>
+          {item ? (
+            <button
+              type="button"
+              onClick={() => onOpenItem(item)}
+              className="wrap-break-word mr-3 rounded-sm text-left font-medium underline decoration-dotted underline-offset-4 outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {item.name}
+            </button>
+          ) : (
+            <span className="wrap-break-word mr-3 font-medium">Item</span>
+          )}
           <span className="text-muted-foreground text-xs">
             {Object.keys(receipt.applied.tiers).length} pack prices saved
             {PACK_TIERS.map((tier) => {
@@ -246,8 +259,17 @@ export function ReviewCard({
                   }
                 />
                 {item && (
-                  <p className="mt-1 text-muted-foreground text-xs">
-                    Lvl. {item.level} &middot; {item.type}
+                  <p className="mt-1 flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
+                    <span>
+                      Lvl. {item.level} &middot; {item.type}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onOpenItem(item)}
+                      className="rounded-sm underline decoration-dotted underline-offset-4 outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      Craft cost
+                    </button>
                   </p>
                 )}
               </div>
