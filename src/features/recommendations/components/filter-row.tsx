@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -151,17 +152,13 @@ export function FilterRow({
         </div>
       </div>
 
-      <label className="flex h-10 cursor-pointer items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          className="size-4 accent-primary"
+      <Label className="flex h-10 cursor-pointer items-center gap-2.5 text-sm">
+        <Checkbox
           checked={filters.hideIncomplete}
-          onChange={(event) =>
-            onChange({ hideIncomplete: event.target.checked })
-          }
+          onCheckedChange={(hideIncomplete) => onChange({ hideIncomplete })}
         />
         Hide incomplete
-      </label>
+      </Label>
     </div>
   )
 }

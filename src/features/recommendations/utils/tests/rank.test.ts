@@ -2,11 +2,16 @@ import { describe, expect, it } from 'vitest'
 
 import type { PriceBook } from '@/stores/price-book'
 import { calculateCraftProfit } from '@/utils/profit'
-import type { RecommendationFilters } from '../../types'
+import type {
+  RecommendationFilters,
+  RecommendationSort,
+  SortKey,
+} from '../../types'
 import {
   bestMarginTier,
   countByState,
   DEFAULT_FILTERS,
+  DEFAULT_SORT,
   rankRecommendations,
 } from '../rank'
 import {
@@ -31,8 +36,9 @@ function rank(
   items: Parameters<typeof rankRecommendations>[0],
   prices: PriceBook,
   overrides: Partial<RecommendationFilters> = {},
+  sort: RecommendationSort = DEFAULT_SORT,
 ) {
-  return rankRecommendations(items, prices, filters(overrides), NOW)
+  return rankRecommendations(items, prices, filters(overrides), sort, NOW)
 }
 
 describe('rankRecommendations', () => {
@@ -106,6 +112,7 @@ describe('rankRecommendations', () => {
       ranked: 1,
       unpricedSale: 1,
       missingInputs: 2,
+      profitable: 1,
     })
   })
 
@@ -157,6 +164,7 @@ describe('rankRecommendations', () => {
       [RING, shoes],
       watched,
       filters({ jobId: JEWELLER }),
+      DEFAULT_SORT,
       NOW,
     )
 
@@ -186,6 +194,66 @@ describe('rankRecommendations', () => {
     const rows = rank([RING], {}, { hideIncomplete: true })
 
     expect(rows).toEqual([])
+  })
+
+  describe('sorting', () => {
+    const priced = book({
+      1: { 1: 100 },
+      100: { 1: 200 },
+      2: { 1: 10_000 },
+      200: { 1: 12_000 },
+    })
+
+    function names(key: SortKey, direction: RecommendationSort['direction']) {
+      return rank([AMULET, RING], priced, {}, { key, direction }).map(
+        (row) => row.item.name,
+      )
+    }
+
+    it('turns every column around', () => {
+      expect(names('margin', 'desc')).toEqual(['Ring', 'Amulet'])
+      expect(names('margin', 'asc')).toEqual(['Amulet', 'Ring'])
+      expect(names('craftCost', 'desc')).toEqual(['Amulet', 'Ring'])
+      expect(names('netPerUnit', 'desc')).toEqual(['Amulet', 'Ring'])
+      expect(names('name', 'asc')).toEqual(['Amulet', 'Ring'])
+      expect(names('name', 'desc')).toEqual(['Ring', 'Amulet'])
+    })
+
+    it('keeps the states apart, whatever the column', () => {
+      const missing = craftable(300, { name: 'Aaa missing', recipe: [[9, 1]] })
+      const rows = rank(
+        [missing, AMULET, RING],
+        priced,
+        {},
+        {
+          key: 'name',
+          direction: 'asc',
+        },
+      )
+
+      // The unpriceable row sorts first by name, and still lands last.
+      expect(rows.map((row) => row.item.name)).toEqual([
+        'Amulet',
+        'Ring',
+        'Aaa missing',
+      ])
+    })
+
+    it('sinks a row with no figure in the sorted column', () => {
+      const unpriced = craftable(300, { name: 'Aaa', recipe: [[1, 1]] })
+      const rows = rank(
+        [unpriced, RING],
+        priced,
+        {},
+        {
+          key: 'craftCost',
+          direction: 'asc',
+        },
+      )
+
+      // Both rank; only the ring has a sale price, so only it has a craft cost to beat.
+      expect(rows.map((row) => row.item.name)).toEqual(['Ring', 'Aaa'])
+    })
   })
 })
 

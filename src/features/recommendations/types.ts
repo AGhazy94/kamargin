@@ -17,6 +17,13 @@ export type Recommendation = {
   thinMargin: boolean
 }
 
+export type SortKey = 'margin' | 'craftCost' | 'netPerUnit' | 'name'
+
+export type RecommendationSort = {
+  key: SortKey
+  direction: 'asc' | 'desc'
+}
+
 export type RecommendationFilters = {
   jobId: number | null
   minLevel: number

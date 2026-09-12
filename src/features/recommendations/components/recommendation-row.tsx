@@ -5,12 +5,7 @@ import { TableCell, TableRow } from '@/components/ui/table'
 import { getJobName } from '@/lib/game-data'
 import { cn } from '@/lib/utils'
 import type { Item } from '@/types/game'
-import {
-  formatCompactKamas,
-  formatKamas,
-  formatMargin,
-  formatTier,
-} from '@/utils/format'
+import { formatKamas, formatMargin, formatTier } from '@/utils/format'
 import type { Recommendation } from '../types'
 
 function Blank() {
@@ -76,23 +71,21 @@ export function RecommendationRow({
         )}
       </TableCell>
 
-      <TableCell
-        className={cn(
-          'hidden text-right text-muted-foreground tabular-nums md:table-cell',
-          dim,
+      <TableCell className={cn('hidden text-right sm:table-cell', dim)}>
+        {netPerUnit === undefined ? (
+          <Blank />
+        ) : (
+          <>
+            <span className={signed(netPerUnit)}>
+              {formatKamas(netPerUnit)}
+            </span>
+            {row.bestTier !== undefined && (
+              <span className="block text-muted-foreground text-xs tabular-nums">
+                {formatTier(row.bestTier)}
+              </span>
+            )}
+          </>
         )}
-      >
-        {row.bestTier === undefined ? <Blank /> : formatTier(row.bestTier)}
-      </TableCell>
-
-      <TableCell
-        className={cn(
-          'hidden text-right sm:table-cell',
-          signed(netPerUnit),
-          dim,
-        )}
-      >
-        {netPerUnit === undefined ? <Blank /> : formatKamas(netPerUnit)}
       </TableCell>
 
       <TableCell
@@ -104,9 +97,9 @@ export function RecommendationRow({
       >
         {margin === undefined ? (
           state === 'unpriced-sale' && row.breakEven !== undefined ? (
-            <span className="whitespace-normal text-muted-foreground text-sm">
+            <span className="text-muted-foreground text-sm">
               <span className="hidden sm:inline">break-even </span>≥{' '}
-              {formatCompactKamas(row.breakEven)}
+              {formatKamas(row.breakEven)}
             </span>
           ) : (
             <Blank />

@@ -32,9 +32,6 @@ export function SkeletonRows({
           <TableCell className="hidden sm:table-cell">
             <Bar className="ml-auto w-16" />
           </TableCell>
-          <TableCell className="hidden md:table-cell">
-            <Bar className="ml-auto w-8" />
-          </TableCell>
           <TableCell className="hidden sm:table-cell">
             <Bar className="ml-auto w-16" />
           </TableCell>

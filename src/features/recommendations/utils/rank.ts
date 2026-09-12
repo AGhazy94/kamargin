@@ -9,7 +9,13 @@ import type { Item, PackTier } from '@/types/game'
 import type { PricedIngredient, TierProfit } from '@/types/profit'
 import { cheapestTier, pricedTierCount } from '@/utils/pack-tiers'
 import { calculateCraftProfit, isThinMargin } from '@/utils/profit'
-import type { Recommendation, RecommendationFilters, RowState } from '../types'
+import type {
+  Recommendation,
+  RecommendationFilters,
+  RecommendationSort,
+  RowState,
+  SortKey,
+} from '../types'
 
 export const LEVEL_RANGE = { min: 1, max: 200 } as const
 
@@ -18,6 +24,12 @@ export const DEFAULT_FILTERS: RecommendationFilters = {
   minLevel: LEVEL_RANGE.min,
   maxLevel: LEVEL_RANGE.max,
   hideIncomplete: false,
+}
+
+/** Reproduces the ranking the screen is named for: the fattest margin first. */
+export const DEFAULT_SORT: RecommendationSort = {
+  key: 'margin',
+  direction: 'desc',
 }
 
 const STATE_ORDER: Record<RowState, number> = {
@@ -114,10 +126,32 @@ function toRecommendation(
   }
 }
 
-function compare(a: Recommendation, b: Recommendation): number {
+function figure(row: Recommendation, key: SortKey): number | undefined {
+  if (key === 'margin') return row.margin
+  if (key === 'craftCost') return row.craftCost
+  if (key === 'netPerUnit') return row.netPerUnit
+  return undefined
+}
+
+function compare(
+  a: Recommendation,
+  b: Recommendation,
+  sort: RecommendationSort,
+): number {
+  // A row with no figure to sort on is not worth promoting, whatever the column.
   if (a.state !== b.state) return STATE_ORDER[a.state] - STATE_ORDER[b.state]
 
-  if (a.state === 'ranked') return (b.margin ?? 0) - (a.margin ?? 0)
+  if (sort.key === 'name') {
+    const byName = a.item.name.localeCompare(b.item.name)
+    return sort.direction === 'asc' ? byName : -byName
+  }
+
+  const left = figure(a, sort.key)
+  const right = figure(b, sort.key)
+  if (left !== undefined && right !== undefined && left !== right)
+    return sort.direction === 'asc' ? left - right : right - left
+  if (left !== right) return left === undefined ? 1 : -1
+
   if (a.state === 'missing-inputs') {
     const missing = a.missingPriceCount - b.missingPriceCount
     if (missing !== 0) return missing
@@ -130,6 +164,7 @@ export function rankRecommendations(
   items: readonly Item[],
   book: PriceBook,
   filters: RecommendationFilters,
+  sort: RecommendationSort = DEFAULT_SORT,
   now = Date.now(),
 ): Recommendation[] {
   const rows: Recommendation[] = []
@@ -142,7 +177,7 @@ export function rankRecommendations(
     rows.push(row)
   }
 
-  return rows.sort(compare)
+  return rows.sort((a, b) => compare(a, b, sort))
 }
 
 export function countByState(rows: readonly Recommendation[]) {
@@ -150,5 +185,7 @@ export function countByState(rows: readonly Recommendation[]) {
     ranked: rows.filter((row) => row.state === 'ranked').length,
     unpricedSale: rows.filter((row) => row.state === 'unpriced-sale').length,
     missingInputs: rows.filter((row) => row.state === 'missing-inputs').length,
+    // A screen of losses reads like a screen of wins until something says otherwise.
+    profitable: rows.filter((row) => (row.margin ?? 0) > 0).length,
   }
 }

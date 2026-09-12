@@ -10,7 +10,10 @@ import { FillPricesDialog } from './components/fill-prices-dialog'
 import { FilterRow } from './components/filter-row'
 import { RecommendationTable } from './components/recommendation-table'
 import { useVisibleRows } from './hooks/use-visible-rows'
-import { useRecommendationFilters } from './stores/filters'
+import {
+  useRecommendationFilters,
+  useRecommendationSort,
+} from './stores/filters'
 import type { Recommendation } from './types'
 import { topBlockers } from './utils/blockers'
 import { countByState, matchesFilters, rankRecommendations } from './utils/rank'
@@ -31,11 +34,12 @@ export function Recommendations({
 }) {
   const { book } = usePriceBook(serverId)
   const { filters, update, reset } = useRecommendationFilters(serverId)
+  const { sort, toggle } = useRecommendationSort(serverId)
   const [filling, setFilling] = useState<Recommendation | null>(null)
 
   const rows = useMemo(
-    () => rankRecommendations(getCraftableItems(), book, filters),
-    [book, filters],
+    () => rankRecommendations(getCraftableItems(), book, filters, sort),
+    [book, filters, sort],
   )
   const counts = countByState(rows)
   const inFilter = useMemo(
@@ -64,7 +68,7 @@ export function Recommendations({
     <>
       <ScrollPanel
         className="max-w-5xl"
-        scrollResetKey={`${filters.jobId}:${filters.minLevel}:${filters.maxLevel}:${filters.hideIncomplete}`}
+        scrollResetKey={`${filters.jobId}:${filters.minLevel}:${filters.maxLevel}:${filters.hideIncomplete}:${sort.key}:${sort.direction}`}
         header={<FilterRow filters={filters} onChange={update} />}
         footer={
           <p className="text-muted-foreground text-sm tabular-nums">
@@ -97,8 +101,16 @@ export function Recommendations({
           <>
             {/* The backlog stays visible: the panel says which of it to clear first. */}
             {counts.ranked === 0 && <div className="py-4">{blockerPanel}</div>}
+            {counts.ranked > 0 && counts.profitable === 0 && (
+              <p className="py-3 text-muted-foreground text-sm">
+                Nothing here turns a profit at these prices — the top row is the
+                smallest loss.
+              </p>
+            )}
             <RecommendationTable
               rows={visible}
+              sort={sort}
+              onSort={toggle}
               onOpen={onOpenItem}
               onFill={setFilling}
               sentinelRef={hasMore ? sentinelRef : undefined}
