@@ -3,11 +3,15 @@
 import { cn } from 'cn'
 import type * as React from 'react'
 
-function Table({ className, ...props }: React.ComponentProps<'table'>) {
+function Table({
+  className,
+  containerClassName,
+  ...props
+}: React.ComponentProps<'table'> & { containerClassName?: string }) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      className={cn('relative w-full overflow-x-auto', containerClassName)}
     >
       <table
         data-slot="table"
@@ -69,7 +73,7 @@ function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
     <th
       data-slot="table-head"
       className={cn(
-        'h-10 whitespace-nowrap px-2 text-left align-middle font-medium text-foreground [&:has([role=checkbox])]:pr-0',
+        'h-12 whitespace-nowrap px-2 text-left align-middle font-medium text-foreground sm:px-3 [&:has([role=checkbox])]:pr-0',
         className,
       )}
       {...props}
@@ -82,7 +86,7 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
     <td
       data-slot="table-cell"
       className={cn(
-        'whitespace-nowrap p-2 align-middle [&:has([role=checkbox])]:pr-0',
+        'whitespace-nowrap px-2 py-4 align-middle sm:px-3 [&:has([role=checkbox])]:pr-0',
         className,
       )}
       {...props}

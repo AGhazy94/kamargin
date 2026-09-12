@@ -21,7 +21,7 @@ export function ServerSelect() {
         if (value !== null) selectServer(value)
       }}
     >
-      <SelectTrigger aria-label="Server" className="min-w-36">
+      <SelectTrigger aria-label="Server" className="min-w-28 sm:min-w-36">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

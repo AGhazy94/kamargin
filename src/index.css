@@ -9,6 +9,14 @@
   --font-heading: var(--font-sans);
   --font-sans: "Geist Variable", sans-serif;
 
+  /* One notch up from Tailwind's default ramp: this screen is read as figures, not prose. */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-lg: 1.1875rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.625rem;
+  --text-3xl: 2rem;
+
   /* Market semantics: kama is the in-game currency, gain/loss price a trade. */
   --color-kama: var(--kama);
   --color-kama-foreground: var(--kama-foreground);
@@ -54,27 +62,27 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Light: aged parchment and ink. */
+/* Light: paper and ink — near-achromatic, so the gold is the only warm thing on screen. */
 :root {
-  --background: oklch(0.957 0.018 85);
-  --foreground: oklch(0.26 0.028 55);
-  --card: oklch(0.978 0.014 85);
-  --card-foreground: oklch(0.26 0.028 55);
-  --popover: oklch(0.978 0.014 85);
-  --popover-foreground: oklch(0.26 0.028 55);
+  --background: oklch(0.955 0.004 85);
+  --foreground: oklch(0.24 0.006 75);
+  --card: oklch(0.995 0.002 85);
+  --card-foreground: oklch(0.24 0.006 75);
+  --popover: oklch(0.995 0.002 85);
+  --popover-foreground: oklch(0.24 0.006 75);
   --primary: oklch(0.62 0.14 70);
   --primary-foreground: oklch(0.99 0.01 85);
-  --secondary: oklch(0.9 0.03 80);
-  --secondary-foreground: oklch(0.3 0.03 58);
-  --muted: oklch(0.92 0.025 82);
-  --muted-foreground: oklch(0.48 0.04 62);
-  --accent: oklch(0.89 0.035 80);
-  --accent-foreground: oklch(0.3 0.03 58);
+  --secondary: oklch(0.925 0.005 85);
+  --secondary-foreground: oklch(0.29 0.006 75);
+  --muted: oklch(0.935 0.004 85);
+  --muted-foreground: oklch(0.5 0.007 75);
+  --accent: oklch(0.915 0.006 85);
+  --accent-foreground: oklch(0.29 0.006 75);
   --destructive: oklch(0.55 0.2 27);
-  --border: oklch(0.84 0.035 75);
-  --input: oklch(0.84 0.035 75);
+  --border: oklch(0.875 0.006 85);
+  --input: oklch(0.875 0.006 85);
   --ring: oklch(0.62 0.14 70);
-  --kama: oklch(0.68 0.15 78);
+  --kama: oklch(0.56 0.13 72);
   --kama-foreground: oklch(0.24 0.03 58);
   --gain: oklch(0.52 0.13 155);
   --loss: oklch(0.55 0.2 27);
@@ -83,36 +91,36 @@
   --chart-3: oklch(0.62 0.1 200);
   --chart-4: oklch(0.55 0.18 20);
   --chart-5: oklch(0.6 0.12 55);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.93 0.026 82);
-  --sidebar-foreground: oklch(0.26 0.028 55);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.94 0.004 85);
+  --sidebar-foreground: oklch(0.24 0.006 75);
   --sidebar-primary: oklch(0.62 0.14 70);
   --sidebar-primary-foreground: oklch(0.99 0.01 85);
-  --sidebar-accent: oklch(0.88 0.032 80);
-  --sidebar-accent-foreground: oklch(0.3 0.03 58);
-  --sidebar-border: oklch(0.84 0.035 75);
+  --sidebar-accent: oklch(0.905 0.006 85);
+  --sidebar-accent-foreground: oklch(0.29 0.006 75);
+  --sidebar-border: oklch(0.875 0.006 85);
   --sidebar-ring: oklch(0.62 0.14 70);
 }
 
-/* Dark: stained wood and lamplight — the default for a companion tool. */
+/* Dark: lamplight on slate — the default for a companion tool. */
 .dark {
-  --background: oklch(0.175 0.016 58);
-  --foreground: oklch(0.92 0.022 82);
-  --card: oklch(0.222 0.021 56);
-  --card-foreground: oklch(0.92 0.022 82);
-  --popover: oklch(0.222 0.021 56);
-  --popover-foreground: oklch(0.92 0.022 82);
+  --background: oklch(0.145 0.004 75);
+  --foreground: oklch(0.95 0.004 85);
+  --card: oklch(0.21 0.005 75);
+  --card-foreground: oklch(0.95 0.004 85);
+  --popover: oklch(0.21 0.005 75);
+  --popover-foreground: oklch(0.95 0.004 85);
   --primary: oklch(0.78 0.148 78);
   --primary-foreground: oklch(0.2 0.028 58);
-  --secondary: oklch(0.3 0.028 56);
-  --secondary-foreground: oklch(0.92 0.022 82);
-  --muted: oklch(0.28 0.022 57);
-  --muted-foreground: oklch(0.7 0.032 78);
-  --accent: oklch(0.3 0.03 58);
-  --accent-foreground: oklch(0.94 0.024 82);
+  --secondary: oklch(0.275 0.006 75);
+  --secondary-foreground: oklch(0.95 0.004 85);
+  --muted: oklch(0.255 0.005 75);
+  --muted-foreground: oklch(0.7 0.006 75);
+  --accent: oklch(0.275 0.006 75);
+  --accent-foreground: oklch(0.96 0.004 85);
   --destructive: oklch(0.62 0.19 25);
-  --border: oklch(0.85 0.05 78 / 16%);
-  --input: oklch(0.85 0.05 78 / 22%);
+  --border: oklch(0.92 0.004 85 / 14%);
+  --input: oklch(0.92 0.004 85 / 20%);
   --ring: oklch(0.78 0.148 78);
   --kama: oklch(0.82 0.155 82);
   --kama-foreground: oklch(0.2 0.028 58);
@@ -123,13 +131,13 @@
   --chart-3: oklch(0.72 0.1 202);
   --chart-4: oklch(0.65 0.19 22);
   --chart-5: oklch(0.72 0.13 52);
-  --sidebar: oklch(0.2 0.019 57);
-  --sidebar-foreground: oklch(0.92 0.022 82);
+  --sidebar: oklch(0.175 0.004 75);
+  --sidebar-foreground: oklch(0.95 0.004 85);
   --sidebar-primary: oklch(0.78 0.148 78);
   --sidebar-primary-foreground: oklch(0.2 0.028 58);
-  --sidebar-accent: oklch(0.28 0.026 56);
-  --sidebar-accent-foreground: oklch(0.92 0.022 82);
-  --sidebar-border: oklch(0.85 0.05 78 / 16%);
+  --sidebar-accent: oklch(0.255 0.005 75);
+  --sidebar-accent-foreground: oklch(0.95 0.004 85);
+  --sidebar-border: oklch(0.92 0.004 85 / 14%);
   --sidebar-ring: oklch(0.78 0.148 78);
 }
 

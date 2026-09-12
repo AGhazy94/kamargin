@@ -14,7 +14,7 @@ export function PriceInput({
   onChange,
   label,
   placeholder = '0',
-  reference = null,
+  reference,
   className,
 }: {
   id?: string
@@ -22,9 +22,12 @@ export function PriceInput({
   onChange: (value: number | undefined) => void
   label: string
   placeholder?: string
+  /** Passing the prop reserves the trailing slot, so filling it later shifts nothing. */
   reference?: ReactNode
   className?: string
 }) {
+  const hasSlot = reference !== undefined
+
   return (
     <div className={cn('relative', className)}>
       <Input
@@ -35,11 +38,13 @@ export function PriceInput({
         placeholder={placeholder}
         value={value === undefined ? '' : String(value)}
         onChange={(event) => onChange(parse(event.target.value))}
-        className="pr-14 text-right tabular-nums"
+        className={cn('text-right tabular-nums', hasSlot && 'pr-12')}
       />
-      <span className="pointer-events-none absolute inset-y-0 right-2 flex w-11 items-center justify-end text-muted-foreground text-xs">
-        {reference}
-      </span>
+      {hasSlot && (
+        <span className="pointer-events-none absolute inset-y-0 right-2.5 flex w-9 items-center justify-end text-muted-foreground text-xs">
+          {reference}
+        </span>
+      )}
     </div>
   )
 }

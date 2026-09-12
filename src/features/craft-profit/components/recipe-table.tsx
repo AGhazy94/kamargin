@@ -1,63 +1,67 @@
+import { useState } from 'react'
+
 import {
   Table,
   TableBody,
-  TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
 import type { PriceBook } from '@/stores/price-book'
-import { formatKamas } from '@/utils/format'
+import type { PackTier } from '@/types/game'
+import type { PackPriceMap } from '../hooks/use-pack-prices'
 import type { CraftProfit } from '../types'
 import { IngredientPriceRow } from './ingredient-price-row'
 
 export function RecipeTable({
   profit,
+  prices,
   book,
   onPriceChange,
 }: {
   profit: CraftProfit
+  prices: PackPriceMap
   book: PriceBook
-  onPriceChange: (itemId: number, unitPrice: number | undefined) => void
+  onPriceChange: (itemId: number, tier: PackTier, packPrice?: number) => void
 }) {
+  // One row open at a time: two sub-rows push the craft cost off-screen.
+  const [openItemId, setOpenItemId] = useState<number | null>(null)
+
   return (
-    <Table>
-      <TableHeader>
+    // Sticky head resolves against the panel, not a scroll container of the table's own.
+    <Table containerClassName="overflow-visible">
+      <TableHeader className="sticky top-0 z-10 bg-card">
         <TableRow>
           <TableHead>Ingredient</TableHead>
-          <TableHead className="text-right">Qty</TableHead>
-          <TableHead className="w-40">
+          <TableHead className="hidden text-right sm:table-cell">Qty</TableHead>
+          <TableHead className="w-32 text-right sm:w-44">
             Unit price{' '}
-            <span className="font-normal text-muted-foreground">per unit</span>
+            <span className="font-normal text-muted-foreground">per pack</span>
           </TableHead>
-          <TableHead className="text-right">Cost</TableHead>
+          <TableHead className="hidden text-right sm:table-cell">
+            Cost
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {profit.lines.map((line) => (
           <IngredientPriceRow
             key={line.itemId}
-            ingredient={line}
-            unitPrice={line.unitPrice}
+            line={line}
+            packPrices={prices[line.itemId] ?? {}}
             entry={book[line.itemId]}
-            lineCost={line.lineCost}
-            onPriceChange={(unitPrice) => onPriceChange(line.itemId, unitPrice)}
+            expanded={openItemId === line.itemId}
+            onToggle={() =>
+              setOpenItemId((current) =>
+                current === line.itemId ? null : line.itemId,
+              )
+            }
+            onPriceChange={(tier, packPrice) =>
+              onPriceChange(line.itemId, tier, packPrice)
+            }
           />
         ))}
       </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Craft cost</TableCell>
-          <TableCell className="text-right font-medium tabular-nums">
-            {profit.craftCost === undefined ? (
-              <span className="text-muted-foreground">—</span>
-            ) : (
-              formatKamas(profit.craftCost)
-            )}
-          </TableCell>
-        </TableRow>
-      </TableFooter>
     </Table>
   )
 }

@@ -8,3 +8,5 @@ export const HOGMEISER_BOOTS_INGREDIENTS: readonly PricedIngredient[] = [
   { itemId: 8761, quantity: 1, unitPrice: 1200 },
   { itemId: 18366, quantity: 6, unitPrice: 95 },
 ]
+
+export const BOOTS_CRAFT_COST = 10520

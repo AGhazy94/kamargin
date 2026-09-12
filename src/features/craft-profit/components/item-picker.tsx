@@ -29,9 +29,9 @@ export function ItemPicker({ onSelect }: { onSelect: (item: Item) => void }) {
         render={
           <Button
             variant="outline"
-            className="h-10 w-full justify-start gap-2 text-muted-foreground"
+            className="h-12 w-full justify-start gap-2.5 text-muted-foreground"
           >
-            <SearchIcon className="size-4" />
+            <SearchIcon className="size-4.5" />
             Search for an item…
           </Button>
         }
