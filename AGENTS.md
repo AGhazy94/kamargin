@@ -51,7 +51,7 @@ src/
 │   ├── errors/
 │   ├── layouts/
 │   └── ui/
-├── config/       # global config, validated env
+├── config/       # global config (empty: offline app has no env to validate)
 ├── features/     # feature modules — see src/features/README.md
 ├── hooks/        # shared hooks
 ├── lib/          # preconfigured third-party libraries
