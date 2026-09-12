@@ -6,6 +6,11 @@ export type Server = {
   name: string
 }
 
+export type Job = {
+  id: number
+  name: string
+}
+
 export type Ingredient = {
   itemId: number
   quantity: number
@@ -20,4 +25,7 @@ export type Item = {
   type: string
   iconUrl: string
   recipe?: Recipe
+  // Only a craftable item has a job and the level its recipe unlocks at.
+  job?: number
+  craftLevel?: number
 }

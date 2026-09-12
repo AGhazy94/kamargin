@@ -1,6 +1,7 @@
 import itemsData from '@/assets/game-data/items.json'
 import meta from '@/assets/game-data/meta.json'
-import type { Item } from '@/types/game'
+import { JOBS } from '@/config/jobs'
+import type { Item, Job } from '@/types/game'
 
 type RawItem = {
   id: number
@@ -9,6 +10,8 @@ type RawItem = {
   type: string
   icon: number | null
   recipe?: [itemId: number, quantity: number][]
+  job?: number
+  craftLevel?: number
 }
 
 const ICON_BASE = 'https://api.dofusdu.de/dofus3/v1/img/item'
@@ -22,6 +25,8 @@ function toItem(raw: RawItem): Item {
     type: raw.type,
     iconUrl: `${ICON_BASE}/${raw.icon}-64.png`,
     recipe: raw.recipe?.map(([itemId, quantity]) => ({ itemId, quantity })),
+    job: raw.job,
+    craftLevel: raw.craftLevel,
   }
 }
 
@@ -33,7 +38,24 @@ const itemTypes = [
   ...new Set([...itemsById.values()].map((item) => item.type)),
 ].sort((a, b) => a.localeCompare(b))
 
+// Prepared once: ranking iterates this array rather than a 13k map, on every filter change.
+const craftableItems = [...itemsById.values()]
+  .filter((item) => item.recipe?.length && item.job !== undefined)
+  .sort((a, b) => a.name.localeCompare(b.name))
+
 export const GAME_DATA_VERSION = meta.gameVersion
+
+export function getCraftableItems(): readonly Item[] {
+  return craftableItems
+}
+
+export function getJobs(): readonly Job[] {
+  return JOBS
+}
+
+export function getJobName(jobId: number | undefined): string | undefined {
+  return JOBS.find((job) => job.id === jobId)?.name
+}
 
 export function getItem(ankamaId: number): Item | undefined {
   return itemsById.get(ankamaId)

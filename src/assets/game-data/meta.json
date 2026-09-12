@@ -2,11 +2,15 @@
   "gameVersion": "3.6.11.15",
   "release": "main",
   "updateStamp": "2026-09-10T17:27:05.370348462+02:00",
-  "generatedAt": "2026-09-12T09:55:45.647Z",
+  "generatedAt": "2026-09-12T14:00:56.186Z",
   "source": "https://api.dofusdu.de/dofus3/v1",
   "itemCounts": {
     "equipment": 4356,
     "resources": 3639,
     "consumables": 3278
+  },
+  "recipeCounts": {
+    "dofusdb": 4858,
+    "joined": 4610
   }
 }
