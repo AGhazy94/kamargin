@@ -158,7 +158,7 @@ afterEach(() => {
 
 describe('application navigation', () => {
   it('preserves the selected item and last edit across navigation and history', async () => {
-    openRoute('/?server=355&item=910')
+    openRoute('/calculator?server=355&item=910')
     fireEvent.change(
       screen.getByRole('textbox', { name: 'Sale price, pack of 1' }),
       { target: { value: '12000' } },
@@ -168,7 +168,7 @@ describe('application navigation', () => {
     expect(readPriceBook(355)[ITEM.id].tiers[1]?.packPrice).toBe(12_000)
     expect(
       screen.getByRole('link', { name: 'Calculator' }).getAttribute('href'),
-    ).toBe('/?server=355&item=910')
+    ).toBe('/calculator?server=355&item=910')
 
     fireEvent.click(screen.getByRole('button', { name: 'Test back' }))
     await screen.findByRole('textbox', { name: 'Sale price, pack of 1' })
@@ -211,7 +211,7 @@ describe('application navigation', () => {
   })
 
   it('handles unavailable items and snapshot IDs without loading another record', async () => {
-    const view = openRoute('/?server=355&item=99999999')
+    const view = openRoute('/calculator?server=355&item=99999999')
     await screen.findByRole('heading', { name: 'Item unavailable' })
     view.unmount()
     openRoute('/snapshots/missing-record?server=355')
@@ -222,7 +222,7 @@ describe('application navigation', () => {
 
 describe('contextual snapshot history', () => {
   it('shows only the current item, keeps the latest row when collapsed, and links to filtered history', () => {
-    openRoute('/?server=355&item=910')
+    openRoute('/calculator?server=355&item=910')
     const history = screen.getByRole('region', { name: 'Snapshot history' })
     expect(within(history).getByRole('heading').textContent).toBe(
       'Snapshot history (2)',
@@ -248,20 +248,20 @@ describe('contextual snapshot history', () => {
   })
 
   it('hides history with no selected item or matching records', () => {
-    const view = openRoute('/?server=355')
+    const view = openRoute('/calculator?server=355')
     expect(
       screen.queryByRole('region', { name: 'Snapshot history' }),
     ).toBeNull()
     view.unmount()
     localStorage.setItem('snapshots:355', '[]')
-    openRoute('/?server=355&item=910')
+    openRoute('/calculator?server=355&item=910')
     expect(
       screen.queryByRole('region', { name: 'Snapshot history' }),
     ).toBeNull()
   })
 
   it('uses the URL server immediately without showing the previous server history', () => {
-    openRoute(`/?server=${OTHER_SERVER.id}&item=910`)
+    openRoute(`/calculator?server=${OTHER_SERVER.id}&item=910`)
     const history = screen.getByRole('region', { name: 'Snapshot history' })
     expect(within(history).getByText('Other server quote')).toBeTruthy()
     expect(within(history).queryByText('Latest quote')).toBeNull()
@@ -270,7 +270,7 @@ describe('contextual snapshot history', () => {
 
   it('focuses Close in a preview and requires confirmation before deleting the last match', async () => {
     localStorage.setItem('snapshots:355', JSON.stringify([SNAPSHOT]))
-    openRoute('/?server=355&item=910')
+    openRoute('/calculator?server=355&item=910')
     fireEvent.click(
       screen.getByRole('button', { name: /^Open snapshot Latest quote/ }),
     )
@@ -357,7 +357,7 @@ describe('contextual snapshot history', () => {
 
 describe('calculator interaction', () => {
   it('keeps ingredient expanders independent', () => {
-    openRoute('/?server=355&item=910')
+    openRoute('/calculator?server=355&item=910')
     const expanders = screen.getAllByRole('button', {
       name: /^Pack prices for /,
     })
@@ -371,7 +371,7 @@ describe('calculator interaction', () => {
   })
 
   it('shows the total craft cost for each sell-pack size', () => {
-    openRoute('/?server=355&item=910')
+    openRoute('/calculator?server=355&item=910')
     expect(screen.getByLabelText('Craft cost, pack of 1').textContent).toBe(
       formatKamas(CRAFT_COST),
     )

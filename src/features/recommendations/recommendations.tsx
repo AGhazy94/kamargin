@@ -67,7 +67,7 @@ export function Recommendations({
   return (
     <>
       <ScrollPanel
-        className="max-w-5xl"
+        className="max-w-app"
         scrollResetKey={`${filters.jobId}:${filters.minLevel}:${filters.maxLevel}:${filters.hideIncomplete}:${sort.key}:${sort.direction}`}
         header={<FilterRow filters={filters} onChange={update} />}
         footer={

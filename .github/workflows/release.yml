@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run ci
+      - run: npm test
+      - run: npm run build
+
+      # The tag must name the version the bundle reports, or a release lies about itself.
+      - name: Check the tag matches package.json
+        run: |
+          tagged="${GITHUB_REF_NAME#v}"
+          packaged="$(node -p "require('./package.json').version")"
+          test "$tagged" = "$packaged" ||
+            { echo "tag $tagged != package.json $packaged"; exit 1; }
+
+      - run: tar -czf "kamargin-${GITHUB_REF_NAME}.tar.gz" -C dist .
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: kamargin-*.tar.gz

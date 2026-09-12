@@ -1,4 +1,4 @@
-# AGENTS.md — dofus-market-calculator
+# AGENTS.md — kamargin
 
 Source of truth for agent behaviour in this repo. Read in full before your first reply.
 
@@ -81,7 +81,8 @@ src/
 └── utils/        # shared utilities
 ```
 
-`app/router.tsx` composes Calculator, Watchlist and Snapshots with client-side hash routing.
+`app/router.tsx` composes the landing page, Calculator, Crafts, Watchlist and Snapshots with
+client-side hash routing — which is also why the Pages deploy needs no SPA fallback.
 There is no `features/*/api/`: prices and recipes still require no runtime fetching.
 
 ### Unidirectional imports (enforced)
@@ -180,6 +181,14 @@ needs a `--color-*` mapping in the `@theme inline` block before a utility class 
 **Biome is the only linter and formatter.** There is no `eslint.config.js` and no `.prettierrc`;
 don't add one.
 
+**knip reports unused files, exports and dependencies**, and runs inside `npm run ci`.
+`src/components/ui` is ignored in [knip.jsonc](knip.jsonc) — it is shadcn's directory, whose files
+and exports arrive whole and are re-synced rather than pruned.
+
+**Deployed to GitHub Pages** as a project site, so `base` in [vite.config.ts](vite.config.ts) is
+`/kamargin/` — the dev server serves that prefix too. Releases are tag-driven; `npm version` then
+`git push --follow-tags`. The version reaches the bundle as `__APP_VERSION__`.
+
 ## Commands
 
 |                     |                                        |
@@ -192,4 +201,5 @@ don't add one.
 | `npm run lint`      | Biome lint (incl. import boundaries)   |
 | `npm run format`    | Biome format, write                    |
 | `npm run check`     | format + lint + import sort, write     |
+| `npm run knip`      | unused files and dependencies          |
 | `npm run ci`        | verify everything, no writes (for CI)  |

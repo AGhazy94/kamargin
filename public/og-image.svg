@@ -1,0 +1,52 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1200 630"
+  width="1200"
+  height="630"
+  font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+>
+  <rect width="1200" height="630" fill="#0b0a08" />
+  <rect x="0" y="0" width="1200" height="6" fill="#ebaa31" />
+
+  <g
+    transform="translate(96 92) scale(2.6)"
+    fill="none"
+    stroke="#ebaa31"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <circle cx="8" cy="8" r="6" />
+    <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
+    <path d="M7 6h1v4" />
+    <path d="m16.71 13.88.7.71-2.82 2.82" />
+  </g>
+  <text x="184" y="141" fill="#f0eeeb" font-size="44" font-weight="600">
+    Kamargin
+  </text>
+
+  <text x="96" y="290" fill="#f0eeeb" font-size="72" font-weight="600">
+    Know what a craft is worth
+  </text>
+  <text x="96" y="374" fill="#f0eeeb" font-size="72" font-weight="600">
+    before you make it.
+  </text>
+
+  <text x="96" y="452" fill="#a19e9a" font-size="32">
+    A Dofus market calculator. Price ingredients, rank crafts by margin.
+  </text>
+
+  <g transform="translate(96 512)">
+    <rect width="232" height="58" rx="12" fill="#1a1816" />
+    <text x="26" y="38" fill="#ebaa31" font-size="26" font-weight="600">
+      167,250 kamas
+    </text>
+    <rect x="256" width="150" height="58" rx="12" fill="#1a1816" />
+    <text x="282" y="38" fill="#45bf82" font-size="26" font-weight="600">
+      +749.6%
+    </text>
+    <text x="438" y="38" fill="#a19e9a" font-size="26">
+      runs entirely in your browser
+    </text>
+  </g>
+</svg>

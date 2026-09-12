@@ -12,7 +12,7 @@ export function ProfitSummaryBar({ profit }: { profit: CraftProfit }) {
       aria-label="Net profit summary"
       className="fixed inset-x-0 bottom-0 z-30 border-border border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
-      <div className="mx-auto flex max-w-5xl items-baseline justify-between gap-4 px-4 py-4 sm:px-8">
+      <div className="mx-auto flex max-w-app items-baseline justify-between gap-4 px-4 py-4 sm:px-8">
         <span className="text-muted-foreground text-sm">
           Net profit
           {best && (

@@ -1,7 +1,7 @@
 {
-  "name": "dofus-market-calculator",
+  "name": "kamargin",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,7 +13,8 @@
     "test": "vitest run",
     "format": "biome format --write .",
     "check": "biome check --write --unsafe .",
-    "ci": "biome ci ."
+    "ci": "biome ci . && knip --config knip.jsonc",
+    "knip": "knip --config knip.jsonc"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -37,6 +38,7 @@
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "jsdom": "^29.1.1",
+    "knip": "^6.35.1",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",

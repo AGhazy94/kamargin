@@ -14,32 +14,54 @@ export function ItemIcon({
   item: Item | undefined
   className?: string
 }) {
-  const [brokenUrl, setBrokenUrl] = useState<string | null>(null)
-
-  if (!item || brokenUrl === item.iconUrl)
-    return (
-      <span
-        aria-hidden
-        className={cn(
-          'flex shrink-0 items-center justify-center rounded-md bg-muted font-medium text-[0.7em] text-muted-foreground uppercase',
-          className,
-        )}
-      >
-        {item?.name.slice(0, 1)}
-      </span>
-    )
+  const [settled, setSettled] = useState<{ url: string; ok: boolean } | null>(
+    null,
+  )
+  const url = item?.iconUrl
+  const state =
+    url === undefined
+      ? 'failed'
+      : settled?.url === url
+        ? settled.ok
+          ? 'ready'
+          : 'failed'
+        : 'loading'
 
   return (
-    <img
-      src={item.iconUrl}
-      alt=""
-      width={64}
-      height={64}
-      loading="lazy"
-      decoding="async"
-      referrerPolicy="no-referrer"
-      onError={() => setBrokenUrl(item.iconUrl)}
-      className={cn('shrink-0', className)}
-    />
+    <span
+      className={cn(
+        'relative flex shrink-0 items-center justify-center overflow-hidden rounded-md',
+        className,
+      )}
+    >
+      {state !== 'ready' && (
+        <span
+          aria-hidden
+          className={cn(
+            'absolute inset-0 flex items-center justify-center bg-muted font-medium text-[0.7em] text-muted-foreground uppercase',
+            state === 'loading' && 'animate-pulse',
+          )}
+        >
+          {state === 'failed' && item?.name.slice(0, 1)}
+        </span>
+      )}
+      {url !== undefined && (
+        <img
+          src={url}
+          alt=""
+          width={64}
+          height={64}
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          onLoad={() => setSettled({ url, ok: true })}
+          onError={() => setSettled({ url, ok: false })}
+          className={cn(
+            'size-full object-contain',
+            state !== 'ready' && 'opacity-0',
+          )}
+        />
+      )}
+    </span>
   )
 }

@@ -27,6 +27,7 @@ import { useServer } from '@/stores/server'
 import type { Item } from '@/types/game'
 import type { Snapshot } from '@/types/saved'
 import { HomeRoute } from './routes/home'
+import { LandingRoute } from './routes/landing'
 import { RecommendationsRoute } from './routes/recommendations'
 import {
   SnapshotRoute,
@@ -46,16 +47,18 @@ export function AppRouter() {
     ? Number(searchParams.get('item'))
     : null
   const [lastItemId, setLastItemId] = useState(itemId)
-  const activeItemId = location.pathname === '/' ? itemId : null
+  const activeItemId = location.pathname === '/calculator' ? itemId : null
   const mainRef = useRef<HTMLElement>(null)
   const title =
     location.pathname === '/'
-      ? 'Calculator'
-      : location.pathname === '/recommendations'
-        ? 'Recommendations'
-        : location.pathname === '/watchlist'
-          ? 'Watchlist'
-          : 'Snapshots'
+      ? 'Kamargin'
+      : location.pathname === '/calculator'
+        ? 'Calculator'
+        : location.pathname === '/recommendations'
+          ? 'Recommendations'
+          : location.pathname === '/watchlist'
+            ? 'Watchlist'
+            : 'Snapshots'
 
   function href(path: string, selectedItemId?: number | null) {
     const params = new URLSearchParams({ server: String(serverId) })
@@ -69,7 +72,7 @@ export function AppRouter() {
   }, [serverId, storedServerId, selectServer])
 
   useEffect(() => {
-    if (location.pathname === '/') setLastItemId(itemId)
+    if (location.pathname === '/calculator') setLastItemId(itemId)
   }, [location.pathname, itemId])
 
   useEffect(() => {
@@ -80,13 +83,16 @@ export function AppRouter() {
           : title
         : (getItem(activeItemId)?.name ?? title)
     const serverName = SERVERS.find((server) => server.id === serverId)?.name
-    document.title = `${pageTitle} | ${serverName} | Dofus Market`
+    document.title =
+      location.pathname === '/'
+        ? 'Kamargin — Dofus craft margins'
+        : `${pageTitle} | ${serverName} | Kamargin`
     mainRef.current?.focus({ preventScroll: true })
     if (mainRef.current) mainRef.current.scrollTop = 0
   }, [title, location.pathname, activeItemId, serverId])
 
   function openItem(item: Item | null) {
-    navigate(href('/', item?.id))
+    navigate(href('/calculator', item?.id))
   }
 
   function openSnapshot(snapshot: Snapshot) {
@@ -97,14 +103,14 @@ export function AppRouter() {
 
   function restore(snapshot: Snapshot) {
     restorePackPrices(serverId, snapshot.prices, snapshot.takenAt)
-    navigate(href('/', snapshot.itemId))
+    navigate(href('/calculator', snapshot.itemId))
   }
 
   function closeSnapshot() {
     const from = (location.state as { from?: string } | null)?.from
     if (
       typeof from === 'string' &&
-      (from.startsWith('/?') || from.startsWith('/snapshots?'))
+      (from.startsWith('/calculator?') || from.startsWith('/snapshots?'))
     )
       navigate(-1)
     else navigate(href('/snapshots'), { replace: true })
@@ -123,10 +129,13 @@ export function AppRouter() {
 
   const destinations = [
     {
-      path: '/',
+      path: '/calculator',
       label: 'Calculator',
       icon: CalculatorIcon,
-      to: href('/', location.pathname === '/' ? itemId : lastItemId),
+      to: href(
+        '/calculator',
+        location.pathname === '/calculator' ? itemId : lastItemId,
+      ),
     },
     {
       path: '/recommendations',
@@ -153,8 +162,8 @@ export function AppRouter() {
       title={title}
       brand={
         <Link
-          to={href('/', location.pathname === '/' ? itemId : lastItemId)}
-          aria-label="Dofus Market calculator"
+          to={href('/')}
+          aria-label="Kamargin home"
           className="flex items-center gap-2.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <CoinsIcon
@@ -162,17 +171,14 @@ export function AppRouter() {
             className="size-8 shrink-0 text-primary"
             strokeWidth={1.75}
           />
-          <span className="flex flex-col text-base leading-tight sm:flex-row sm:gap-1.5">
-            <span>Dofus</span>
-            <span>Market</span>
-          </span>
+          <span className="text-base leading-tight">Kamargin</span>
         </Link>
       }
       mainRef={mainRef}
       scroll={
         location.pathname === '/recommendations'
           ? 'panel'
-          : location.pathname === '/'
+          : location.pathname === '/calculator'
             ? 'panel-lg'
             : 'page'
       }
@@ -195,7 +201,7 @@ export function AppRouter() {
         <NavLink
           key={path}
           to={to}
-          end={path === '/'}
+          end
           className={({ isActive }) =>
             cn(
               // Stacked below sm, where four labels on one line truncate to three letters.
@@ -215,6 +221,19 @@ export function AppRouter() {
         <Route
           path="/"
           element={
+            <LandingRoute
+              destinations={{
+                calculator: href('/calculator', lastItemId),
+                crafts: href('/recommendations'),
+                watchlist: href('/watchlist'),
+                snapshots: href('/snapshots'),
+              }}
+            />
+          }
+        />
+        <Route
+          path="/calculator"
+          element={
             <HomeRoute
               key={serverId}
               serverId={serverId}
@@ -230,7 +249,7 @@ export function AppRouter() {
               key={serverId}
               serverId={serverId}
               onOpenItem={openItem}
-              calculatorHref={href('/', lastItemId)}
+              calculatorHref={href('/calculator', lastItemId)}
             />
           }
         />
@@ -240,7 +259,7 @@ export function AppRouter() {
             <WatchlistRoute
               serverId={serverId}
               onSelectItem={openItem}
-              calculatorHref={href('/', lastItemId)}
+              calculatorHref={href('/calculator', lastItemId)}
             />
           }
         />
@@ -250,7 +269,7 @@ export function AppRouter() {
             <SnapshotsRoute
               serverId={serverId}
               onOpen={openSnapshot}
-              calculatorHref={href('/', lastItemId)}
+              calculatorHref={href('/calculator', lastItemId)}
             />
           }
         />
@@ -275,7 +294,7 @@ export function AppRouter() {
               </h1>
               <Link
                 className="text-primary underline underline-offset-4"
-                to={href('/')}
+                to={href('/calculator')}
               >
                 Open calculator
               </Link>

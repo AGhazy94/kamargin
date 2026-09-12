@@ -1,6 +1,7 @@
 import { ArrowLeftIcon } from 'lucide-react'
 import { Link, useParams, useSearchParams } from 'react-router'
 
+import { ItemIcon } from '@/components/item-icon'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -104,7 +105,7 @@ export function SnapshotsRoute({
   onOpen: (snapshot: Snapshot) => void
   calculatorHref: string
 }) {
-  const { snapshots } = useSnapshots(serverId)
+  const { snapshots, removeSnapshot } = useSnapshots(serverId)
   const [params, setParams] = useSearchParams()
   const query = params.get('q') ?? ''
   const itemId = params.has('item') ? Number(params.get('item')) : null
@@ -202,7 +203,11 @@ export function SnapshotsRoute({
         </p>
       )}
       {filtered.length ? (
-        <SnapshotList snapshots={filtered} onOpen={onOpen} />
+        <SnapshotList
+          snapshots={filtered}
+          onOpen={onOpen}
+          onDelete={removeSnapshot}
+        />
       ) : (
         <div className="flex flex-col items-start gap-4 py-8">
           <p className="text-muted-foreground">
@@ -266,12 +271,15 @@ export function SnapshotRoute({
           </Button>
           <Badge variant="secondary">Snapshot</Badge>
         </div>
-        <h1
-          id="snapshot-title"
-          className="wrap-anywhere max-w-full font-heading font-semibold text-xl"
-        >
-          {snapshot.label}
-        </h1>
+        <div className="flex min-w-0 max-w-full items-center gap-3">
+          <ItemIcon item={getItem(snapshot.itemId)} className="size-11" />
+          <h1
+            id="snapshot-title"
+            className="wrap-anywhere min-w-0 font-heading font-semibold text-xl"
+          >
+            {snapshot.label}
+          </h1>
+        </div>
         <p className="wrap-anywhere text-muted-foreground text-sm">
           {snapshot.itemName} ·{' '}
           {SERVERS.find((server) => server.id === serverId)?.name}

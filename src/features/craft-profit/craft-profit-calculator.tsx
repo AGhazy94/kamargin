@@ -59,7 +59,7 @@ export function CraftProfitCalculator({
         <ItemPicker onSelect={onItemChange} />
       </div>
 
-      <div className="grid items-start gap-8 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-stretch">
+      <div className="grid items-start gap-8 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_26rem]">
         {!item ? (
           <EmptyState />
         ) : status === 'no-recipe' ? (
