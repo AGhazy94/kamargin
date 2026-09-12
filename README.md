@@ -46,6 +46,16 @@ cost always uses the cheapest per-unit tier you have entered. Prices older than 
 badged stale. Nothing is ever silently dropped: a recipe missing an input says how many
 inputs it is missing, and offers to take them.
 
+<img src="docs/screenshots/crafts.png" alt="The Crafts screen: Shoemaker recipes ranked by margin, with craft cost and net per unit." />
+
+<p align="center"><em>Crafts — every recipe your prices reach, worst-to-best on any column.</em></p>
+
+<img src="docs/screenshots/calculator.png" alt="The calculator: a recipe priced ingredient by ingredient beside the sell panel." />
+
+<p align="center"><em>Calculator — one recipe, with the margin at each sale tier beside it.</em></p>
+
+> The figures in both screenshots come from made-up prices, not a real market.
+
 ## Running it
 
 ```sh
