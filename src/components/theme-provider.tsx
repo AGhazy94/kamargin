@@ -44,6 +44,16 @@ export function ThemeProvider({
           : theme
       root.classList.remove('light', 'dark')
       root.classList.add(resolved)
+      // The hex lives once, in index.html; an explicit choice just picks which meta applies.
+      for (const meta of document.querySelectorAll<HTMLMetaElement>(
+        'meta[name="theme-color"][data-scheme]',
+      ))
+        meta.media =
+          theme === 'system'
+            ? `(prefers-color-scheme: ${meta.dataset.scheme})`
+            : meta.dataset.scheme === resolved
+              ? 'all'
+              : 'not all'
     }
 
     apply()

@@ -10,8 +10,21 @@
       content="A client-side Dofus market calculator: price ingredients, rank every craft by margin, and snapshot what a craft was worth. Runs in your browser, no account."
     />
     <link rel="canonical" href="https://aghazy94.github.io/kamargin/" />
-    <meta name="theme-color" content="#0b0a08" />
+    <!-- Painted before the theme script runs, so the value cannot come from CSS; keep in step with --background. -->
+    <meta
+      name="theme-color"
+      data-scheme="light"
+      media="(prefers-color-scheme: light)"
+      content="#f1f0ed"
+    />
+    <meta
+      name="theme-color"
+      data-scheme="dark"
+      media="(prefers-color-scheme: dark)"
+      content="#0b0a08"
+    />
     <meta name="color-scheme" content="dark light" />
+    <meta name="apple-mobile-web-app-title" content="Kamargin" />
 
     <!-- PNG fallbacks: an SVG-only favicon is ignored by older Safari and every touch icon. -->
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
@@ -49,10 +62,21 @@
         "@type": "WebApplication",
         "name": "Kamargin",
         "url": "https://aghazy94.github.io/kamargin/",
-        "applicationCategory": "GameApplication",
+        "applicationCategory": "UtilitiesApplication",
+        "applicationSubCategory": "Dofus",
         "operatingSystem": "Any browser",
         "browserRequirements": "Requires JavaScript",
+        "softwareVersion": "%APP_VERSION%",
+        "inLanguage": "en",
+        "screenshot": "https://aghazy94.github.io/kamargin/screenshots/craft-cost.png",
         "description": "A client-side Dofus market calculator: price ingredients, rank every craft by margin, and snapshot what a craft was worth.",
+        "featureList": [
+          "Read marketplace prices from a screenshot, on-device",
+          "Cost one recipe across all four pack sizes",
+          "Rank every reachable craft by margin",
+          "Snapshot and restore a price book",
+          "Works offline; no account and no server"
+        ],
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
         "author": {
           "@type": "Person",

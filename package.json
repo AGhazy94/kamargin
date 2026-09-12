@@ -8,6 +8,7 @@
     "generate:game-data": "node scripts/generate-game-data.mjs",
     "generate:ocr-assets": "node scripts/vendor-ocr.mjs",
     "verify:ocr-assets": "node scripts/vendor-ocr.mjs --check",
+    "capture:screenshots": "node scripts/capture-screenshots.mjs",
     "capture:ocr-fixtures": "node src/features/screenshot-import/utils/tests/capture-fixtures.mjs",
     "build": "tsc --noEmit && vite build",
     "lint": "biome lint .",

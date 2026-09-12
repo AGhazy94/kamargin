@@ -1,7 +1,11 @@
 {
+  "id": "./",
   "name": "Kamargin",
   "short_name": "Kamargin",
+  "lang": "en",
+  "dir": "ltr",
   "description": "Know what a craft is worth before you make it.",
+  "categories": ["games", "utilities"],
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -16,5 +20,28 @@
       "purpose": "maskable"
     },
     { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "screenshots": [
+    {
+      "src": "./screenshots/craft-cost.png",
+      "sizes": "2880x2160",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "One recipe costed out, with the margin at each sale tier"
+    },
+    {
+      "src": "./screenshots/what-to-craft.png",
+      "sizes": "2880x2160",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Every craft your prices reach, ranked by margin"
+    },
+    {
+      "src": "./screenshots/craft-cost-narrow.png",
+      "sizes": "824x1800",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "The same recipe on a phone"
+    }
   ]
 }
