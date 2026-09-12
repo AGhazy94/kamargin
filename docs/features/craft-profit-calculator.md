@@ -1,6 +1,7 @@
 # Feature — Craft profit calculator
 
-**Status:** specified and designed, not built. See [Design](#design--settled-2026-09-12).
+**Status:** built. Superseded in part by [v2](craft-profit-calculator-v2.md), which adds pack tiers,
+saved items and a visual pass.
 
 The first feature, and likely not the last. Answers one question: *for this item, on my server, does
 crafting it and selling it on the marketplace make kamas?*
