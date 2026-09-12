@@ -1,7 +1,12 @@
 {
   "$schema": "./node_modules/knip/schema.json",
-  "entry": ["src/index.css", "src/**/tests/*.test.{ts,tsx}", "scripts/*.mjs"],
-  "project": ["src/**/*.{ts,tsx,css}", "scripts/*.mjs"],
+  "entry": [
+    "src/index.css",
+    "src/**/tests/*.test.{ts,tsx}",
+    "scripts/*.{js,mjs}",
+    "src/features/screenshot-import/utils/ocr.ts"
+  ],
+  "project": ["src/**/*.{ts,tsx,css}", "scripts/*.{js,mjs}"],
   "ignoreExportsUsedInFile": true,
   // components/ui is shadcn's: its files and exports arrive whole and are re-synced, not pruned.
   "ignore": ["src/components/ui/**"]
