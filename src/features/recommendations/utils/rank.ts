@@ -1,6 +1,12 @@
 import type { PriceBook } from '@/stores/price-book'
 import type { Item } from '@/types/game'
 import { summariseCraft } from '@/utils/craft'
+import {
+  isSettled,
+  isVolatile,
+  type PriceHistory,
+  volatilityOf,
+} from '@/utils/price-history'
 import { isThinMargin } from '@/utils/profit'
 import type {
   Recommendation,
@@ -11,6 +17,8 @@ import type {
 } from '../types'
 
 export const LEVEL_RANGE = { min: 1, max: 200 } as const
+
+const EMPTY_HISTORY: PriceHistory = new Map()
 
 export const DEFAULT_FILTERS: RecommendationFilters = {
   jobId: null,
@@ -46,12 +54,12 @@ function toRecommendation(
   item: Item,
   book: PriceBook,
   now: number,
+  history: PriceHistory,
 ): Recommendation {
-  const { profit, best, optimisticPerUnit, stale } = summariseCraft(
-    item,
-    book,
-    now,
-  )
+  const { profit, best, optimisticPerUnit, usedItemIds, stale } =
+    summariseCraft(item, book, now)
+
+  const swings = usedItemIds.map((id) => volatilityOf(history.get(id)))
 
   const incomplete =
     profit.missingPriceCount > 0 || profit.craftCost === undefined
@@ -81,6 +89,8 @@ function toRecommendation(
       .filter((line) => line.unitPrice === undefined)
       .map(({ itemId, quantity }) => ({ itemId, quantity })),
     stale,
+    settled: stale && swings.length > 0 && swings.every(isSettled),
+    volatile: swings.some(isVolatile),
     thinMargin: isThinMargin(best),
   }
 }
@@ -131,13 +141,14 @@ export function rankRecommendations(
   filters: RecommendationFilters,
   sort: RecommendationSort = DEFAULT_SORT,
   now = Date.now(),
+  history: PriceHistory = EMPTY_HISTORY,
 ): Recommendation[] {
   const rows: Recommendation[] = []
 
   for (const item of items) {
     // Job and level are plain field comparisons: they cut the set before a price is read.
     if (!matchesFilters(item, filters)) continue
-    rows.push(toRecommendation(item, book, now))
+    rows.push(toRecommendation(item, book, now, history))
   }
 
   return rows.sort((a, b) => compare(a, b, sort))

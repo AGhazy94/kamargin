@@ -38,9 +38,8 @@ function BlockerRow({
         className="min-w-0 flex-1 rounded-md py-1 text-left outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none"
       >
         <span className="wrap-anywhere block text-sm">{blocker.name}</span>
-        <span className="block text-muted-foreground text-xs">
-          unlocks <span className="tabular-nums">{blocker.recipeCount}</span>{' '}
-          {blocker.recipeCount === 1 ? 'craft' : 'crafts'}
+        <span className="block text-muted-foreground text-xs tabular-nums">
+          {blocker.detail}
         </span>
       </button>
       {/* Below sm the field takes its own line rather than squeezing the name. */}
@@ -68,10 +67,14 @@ function BlockerRow({
 
 /** What to price next is decided by what it would unlock — so it is priced right here. */
 export function BlockerPanel({
+  title,
+  description,
   blockers,
   onOpen,
   onPrice,
 }: {
+  title: string
+  description: string
   blockers: readonly Blocker[]
   onOpen: (item: Item) => void
   onPrice: (itemId: number, packPrice: number) => void
@@ -93,11 +96,10 @@ export function BlockerPanel({
       className="w-full max-w-xl rounded-lg border bg-muted/20 p-4"
     >
       <h2 id="blockers-title" className="font-heading font-medium text-sm">
-        Price these first
+        {title}
       </h2>
       <p className="mt-1 text-muted-foreground text-xs">
-        The ingredients holding back the most crafts that could still turn a
-        profit. One pack-of-1 price each — Enter saves it.
+        {description} One pack-of-1 price each — Enter saves it.
       </p>
       <ul className="mt-2 flex flex-col divide-y">
         {shown.map((blocker) => (

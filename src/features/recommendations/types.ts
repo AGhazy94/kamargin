@@ -16,6 +16,10 @@ export type Recommendation = {
   /** The unpriced ingredients, in recipe order — what the fill dialog asks for. */
   missing: readonly Ingredient[]
   stale: boolean
+  /** Stale, but the history says nothing behind it has moved — the age is a false alarm. */
+  settled: boolean
+  /** Something behind it swings, however fresh the figures look. */
+  volatile: boolean
   thinMargin: boolean
 }
 
@@ -34,9 +38,10 @@ export type RecommendationFilters = {
   showDead: boolean
 }
 
-/** An unpriced ingredient, with the number of craftable recipes it blocks. */
+/** One row of a price queue — what to price next, or what to price again. */
 export type Blocker = {
   itemId: number
   name: string
-  recipeCount: number
+  /** Why it is in the queue, already worded: the panel renders it verbatim. */
+  detail: string
 }

@@ -16,6 +16,8 @@ export type CraftSummary = {
   best?: TierProfit
   /** Best net per unit with every unpriced ingredient free: an upper bound, absent once nothing is missing. */
   optimisticPerUnit?: number
+  /** The items whose prices the figures were built from — what freshness is judged on. */
+  usedItemIds: readonly number[]
   stale: boolean
 }
 
@@ -60,13 +62,17 @@ export function summariseCraft(
 ): CraftSummary {
   const recipe = item.recipe ?? []
   const used: TierPrice[] = []
+  const usedItemIds: number[] = []
 
   const ingredients: PricedIngredient[] = recipe.map((ingredient) => {
     const entry = book[ingredient.itemId]
     const prices = getPackPrices(entry)
     const cheapest = cheapestTier(prices)
     const price = usedPrice(entry, cheapest?.tier)
-    if (price) used.push(price)
+    if (price) {
+      used.push(price)
+      usedItemIds.push(ingredient.itemId)
+    }
 
     return {
       itemId: ingredient.itemId,
@@ -86,12 +92,16 @@ export function summariseCraft(
       ? undefined
       : bestPerUnit(optimisticCraftProfit({ ingredients, salePrices }).tiers)
   const salePrice = usedPrice(saleEntry, best?.tier)
-  if (salePrice) used.push(salePrice)
+  if (salePrice) {
+    used.push(salePrice)
+    usedItemIds.push(item.id)
+  }
 
   return {
     profit,
     best,
     optimisticPerUnit,
+    usedItemIds,
     // Freshness is shown, never scored: a stale row keeps its place in the order.
     stale: used.length > 0 && used.every((price) => isStale(price, now)),
   }

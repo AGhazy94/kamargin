@@ -116,7 +116,11 @@ export function RecommendationRow({
 
       <TableCell className="whitespace-normal text-right">
         <span className="flex flex-wrap items-center justify-end gap-1.5">
-          {row.stale && <Badge variant="outline">stale</Badge>}
+          {/* An age the history contradicts is a false alarm, so it says so rather than nagging. */}
+          {row.stale && (
+            <Badge variant="outline">{row.settled ? 'steady' : 'stale'}</Badge>
+          )}
+          {row.volatile && <Badge variant="secondary">swings</Badge>}
           {row.thinMargin && <Badge variant="secondary">thin</Badge>}
           {/* No fill button: a wrong verdict is corrected on the sale price, not the inputs. */}
           {state === 'dead' && <Badge variant="outline">dead</Badge>}

@@ -1,8 +1,8 @@
-# Feature — Craft recommendations, v4
+# Feature — Craft recommendations, v5
 
 **Status:** built 2026-09-13.
 
-v3 ranks what you have priced and queues what you have not. v4 answers the question that queue
+v3 ranks what you have priced and queues what you have not. v5 answers the question that queue
 raises: **of the things I have not priced, which are worth the trip to the HDV?**
 
 Builds on [craft-recommendations-v3.md](craft-recommendations-v3.md). Market mechanics and the
@@ -44,7 +44,7 @@ network, no change to the offline constraint.
 | Rows with no sale price | **Never `dead`.** Nothing to bound against |
 | Where `dead` rows go | Out of the default list; behind a footer count that opens them **on their own** |
 | `topBlockers` input | The **survivor** set, so unlock counts mean profitable recipes |
-| Stale prices | Unchanged in v4 — still shown, never scored. Deferred, below |
+| Stale prices | Unchanged in v5 — still shown, never scored. Deferred, below |
 
 ### The bound needs a priced ingredient to bite
 
@@ -52,7 +52,7 @@ Found while writing the tests, and it bounds the whole feature: a recipe with **
 ingredient can never be dead. Its optimistic cost is zero, so its best case is the sale price minus
 the 2% fee — always a profit. The prune therefore does nothing on a cold price book, and sharpens as
 the book fills. That is the right shape (a claim is only made once there is evidence for it), but it
-means v4 is worth nothing to a new player and a great deal to a returning one.
+means v5 is worth nothing to a new player and a great deal to a returning one.
 
 ### Why net profit, not margin
 
@@ -144,11 +144,12 @@ with it.
 - `visibleRows`: dead hidden by default, listed alone on request, and `hideIncomplete` dropping the
   backlog while they are hidden.
 
-## Deferred — not in v4
+## Deferred — not in v5
 
 - **Stale as an interval, not an absence.** A price older than `STALE_AFTER_MS` could feed the
   optimistic bound and prune more rows before any lookup. It changes what "missing" means across the
   whole app, so it is its own feature.
 - **Volatility from snapshots.** Items whose price has not moved across stored snapshots do not need
   re-checking; items that swing do. That is the useful answer to "what needs a fresh price today",
-  and it needs the snapshot history, not the price book.
+  and it needs the snapshot history, not the price book. Taken up in
+  [price-volatility-v6.md](price-volatility-v6.md).

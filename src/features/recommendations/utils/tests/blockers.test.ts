@@ -29,9 +29,9 @@ const ITEMS = [
 describe('topBlockers', () => {
   it('ranks unpriced ingredients by the recipes they hold back', () => {
     expect(topBlockers(rows(ITEMS), {})).toEqual([
-      { itemId: 1, name: 'Item 1', recipeCount: 3 },
-      { itemId: 2, name: 'Item 2', recipeCount: 1 },
-      { itemId: 3, name: 'Item 3', recipeCount: 1 },
+      { itemId: 1, name: 'Item 1', detail: 'unlocks 3 crafts' },
+      { itemId: 2, name: 'Item 2', detail: 'unlocks 1 craft' },
+      { itemId: 3, name: 'Item 3', detail: 'unlocks 1 craft' },
     ])
   })
 
@@ -60,8 +60,8 @@ describe('topBlockers', () => {
     const blockers = topBlockers(rows(ITEMS, prices), prices)
 
     expect(blockers).toEqual([
-      { itemId: 1, name: 'Item 1', recipeCount: 2 },
-      { itemId: 3, name: 'Item 3', recipeCount: 1 },
+      { itemId: 1, name: 'Item 1', detail: 'unlocks 2 crafts' },
+      { itemId: 3, name: 'Item 3', detail: 'unlocks 1 craft' },
     ])
   })
 })
@@ -70,7 +70,7 @@ describe('mergeBlockers', () => {
   const blocker = (itemId: number, recipeCount = 1) => ({
     itemId,
     name: `Item ${itemId}`,
-    recipeCount,
+    detail: `unlocks ${recipeCount} crafts`,
   })
   const shown = [blocker(1), blocker(2), blocker(3)]
 

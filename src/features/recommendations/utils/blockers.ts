@@ -29,6 +29,10 @@ export function mergeBlockers(
   return merged
 }
 
+function nameOf(itemId: number): string {
+  return getItem(itemId)?.name ?? `Item ${itemId}`
+}
+
 /** Which unpriced ingredients hold back the most recipes — the answer to a cold price book. */
 export function topBlockers(
   rows: readonly Recommendation[],
@@ -47,13 +51,14 @@ export function topBlockers(
   }
 
   return [...blocked]
-    .map(([itemId, recipeCount]) => ({
-      itemId,
-      name: getItem(itemId)?.name ?? `Item ${itemId}`,
-      recipeCount,
-    }))
     .sort(
-      (a, b) => b.recipeCount - a.recipeCount || a.name.localeCompare(b.name),
+      ([leftId, left], [rightId, right]) =>
+        right - left || nameOf(leftId).localeCompare(nameOf(rightId)),
     )
     .slice(0, limit)
+    .map(([itemId, recipeCount]) => ({
+      itemId,
+      name: nameOf(itemId),
+      detail: `unlocks ${recipeCount} ${recipeCount === 1 ? 'craft' : 'crafts'}`,
+    }))
 }

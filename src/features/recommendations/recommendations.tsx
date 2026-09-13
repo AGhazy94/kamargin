@@ -4,7 +4,9 @@ import { ScrollPanel } from '@/components/scroll-panel'
 import { getCraftableItems, getJobName } from '@/lib/game-data'
 import { cn } from '@/lib/utils'
 import { usePriceBook, writeTierPrice } from '@/stores/price-book'
+import { useSnapshots } from '@/stores/saved-items'
 import type { Item } from '@/types/game'
+import { buildPriceHistory } from '@/utils/price-history'
 import { BlockerPanel } from './components/blocker-panel'
 import { EmptyState, NoMatches } from './components/empty-state'
 import { FillPricesDialog } from './components/fill-prices-dialog'
@@ -18,6 +20,7 @@ import {
 import type { Recommendation } from './types'
 import { topBlockers } from './utils/blockers'
 import { countByState, rankRecommendations, visibleRows } from './utils/rank'
+import { topRefresh } from './utils/refresh'
 
 /** The one place a hidden row is admitted to: a count you can open, not a silent drop. */
 function DeadToggle({
@@ -60,13 +63,26 @@ export function Recommendations({
   calculatorHref: string
 }) {
   const { book } = usePriceBook(serverId)
+  const { snapshots } = useSnapshots(serverId)
   const { filters, update, reset } = useRecommendationFilters(serverId)
   const { sort, toggle } = useRecommendationSort(serverId)
   const [filling, setFilling] = useState<Recommendation | null>(null)
 
+  const history = useMemo(
+    () => buildPriceHistory(snapshots, book),
+    [snapshots, book],
+  )
   const inFilter = useMemo(
-    () => rankRecommendations(getCraftableItems(), book, filters, sort),
-    [book, filters, sort],
+    () =>
+      rankRecommendations(
+        getCraftableItems(),
+        book,
+        filters,
+        sort,
+        Date.now(),
+        history,
+      ),
+    [book, filters, sort, history],
   )
   const counts = countByState(inFilter)
   const rows = useMemo(
@@ -78,16 +94,24 @@ export function Recommendations({
     () => (counts.ranked === 0 ? topBlockers(inFilter, book) : []),
     [counts.ranked, inFilter, book],
   )
+  // The cold-start queue and the warm-start one answer the same question at different stages.
+  const refreshing = useMemo(
+    () => (counts.ranked === 0 ? [] : topRefresh(history)),
+    [counts.ranked, history],
+  )
+
+  const priceHere = (itemId: number, packPrice: number) =>
+    writeTierPrice(serverId, itemId, 1, packPrice)
 
   const blockerPanel = (
     <BlockerPanel
       // A new filter is a new backlog: the queue and its saved rows start over.
       key={`${filters.jobId}:${filters.minLevel}:${filters.maxLevel}`}
+      title="Price these first"
+      description="The ingredients holding back the most crafts that could still turn a profit."
       blockers={blockers}
       onOpen={onOpenItem}
-      onPrice={(itemId, packPrice) =>
-        writeTierPrice(serverId, itemId, 1, packPrice)
-      }
+      onPrice={priceHere}
     />
   )
 
@@ -139,6 +163,17 @@ export function Recommendations({
           <>
             {/* The backlog stays visible: the panel says which of it to clear first. */}
             {counts.ranked === 0 && <div className="py-4">{blockerPanel}</div>}
+            {refreshing.length > 0 && (
+              <div className="py-4">
+                <BlockerPanel
+                  title="Worth checking again"
+                  description="Prices you already have that have moved the most since you last looked."
+                  blockers={refreshing}
+                  onOpen={onOpenItem}
+                  onPrice={priceHere}
+                />
+              </div>
+            )}
             {counts.ranked > 0 && counts.profitable === 0 && (
               <p className="py-3 text-muted-foreground text-sm">
                 Nothing here turns a profit at these prices — the top row is the
