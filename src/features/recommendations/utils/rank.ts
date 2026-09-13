@@ -17,6 +17,7 @@ export const DEFAULT_FILTERS: RecommendationFilters = {
   minLevel: LEVEL_RANGE.min,
   maxLevel: LEVEL_RANGE.max,
   hideIncomplete: false,
+  showDead: false,
 }
 
 /** Reproduces the ranking the screen is named for: the fattest margin first. */
@@ -29,6 +30,7 @@ const STATE_ORDER: Record<RowState, number> = {
   ranked: 0,
   'unpriced-sale': 1,
   'missing-inputs': 2,
+  dead: 3,
 }
 
 export function matchesFilters(
@@ -45,10 +47,21 @@ function toRecommendation(
   book: PriceBook,
   now: number,
 ): Recommendation {
-  const { profit, best, stale } = summariseCraft(item, book, now)
+  const { profit, best, optimisticPerUnit, stale } = summariseCraft(
+    item,
+    book,
+    now,
+  )
 
-  const state: RowState =
+  const incomplete =
     profit.missingPriceCount > 0 || profit.craftCost === undefined
+  // A bound that loses with its gaps free loses at every real price they could take.
+  const dead =
+    incomplete && optimisticPerUnit !== undefined && optimisticPerUnit <= 0
+
+  const state: RowState = dead
+    ? 'dead'
+    : incomplete
       ? 'missing-inputs'
       : best === undefined
         ? 'unpriced-sale'
@@ -57,6 +70,7 @@ function toRecommendation(
   return {
     item,
     state,
+    optimisticPerUnit,
     craftCost: profit.craftCost,
     breakEven: profit.breakEven,
     bestTier: best?.tier,
@@ -102,6 +116,12 @@ function compare(
     if (missing !== 0) return missing
   }
 
+  // Among the dead, the near misses first: those are the ones a corrected sale price revives.
+  if (a.state === 'dead') {
+    const bound = (b.optimisticPerUnit ?? 0) - (a.optimisticPerUnit ?? 0)
+    if (bound !== 0) return bound
+  }
+
   return a.item.name.localeCompare(b.item.name)
 }
 
@@ -117,12 +137,29 @@ export function rankRecommendations(
   for (const item of items) {
     // Job and level are plain field comparisons: they cut the set before a price is read.
     if (!matchesFilters(item, filters)) continue
-    const row = toRecommendation(item, book, now)
-    if (filters.hideIncomplete && row.state === 'missing-inputs') continue
-    rows.push(row)
+    rows.push(toRecommendation(item, book, now))
   }
 
   return rows.sort((a, b) => compare(a, b, sort))
+}
+
+/**
+ * Visibility is applied after ranking, not during it: the counts and the blocker
+ * panel both need the rows a filter is hiding.
+ */
+export function visibleRows(
+  rows: readonly Recommendation[],
+  filters: RecommendationFilters,
+): Recommendation[] {
+  // Dead rows sort last of all, so listing them alongside hundreds of live ones would
+  // answer "show me what you pruned" with a screen that looks unchanged.
+  if (filters.showDead) return rows.filter((row) => row.state === 'dead')
+
+  return rows.filter(
+    (row) =>
+      row.state !== 'dead' &&
+      !(filters.hideIncomplete && row.state === 'missing-inputs'),
+  )
 }
 
 export function countByState(rows: readonly Recommendation[]) {
@@ -130,6 +167,7 @@ export function countByState(rows: readonly Recommendation[]) {
     ranked: rows.filter((row) => row.state === 'ranked').length,
     unpricedSale: rows.filter((row) => row.state === 'unpriced-sale').length,
     missingInputs: rows.filter((row) => row.state === 'missing-inputs').length,
+    dead: rows.filter((row) => row.state === 'dead').length,
     // A screen of losses reads like a screen of wins until something says otherwise.
     profitable: rows.filter((row) => (row.margin ?? 0) > 0).length,
   }

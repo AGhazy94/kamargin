@@ -31,7 +31,7 @@ export function RecommendationRow({
 }) {
   const { item, state, craftCost, margin, netPerUnit } = row
   // The figures grey out; the name and the action stay an invitation to fill the row in.
-  const dim = state === 'missing-inputs' && 'opacity-60'
+  const dim = (state === 'missing-inputs' || state === 'dead') && 'opacity-60'
   const caption = [
     `Lv ${item.craftLevel}`,
     getJobName(item.job),
@@ -96,7 +96,12 @@ export function RecommendationRow({
         )}
       >
         {margin === undefined ? (
-          state === 'unpriced-sale' && row.breakEven !== undefined ? (
+          state === 'dead' && row.optimisticPerUnit !== undefined ? (
+            <span className="text-muted-foreground text-sm">
+              <span className="hidden sm:inline">best case </span>
+              {formatKamas(row.optimisticPerUnit)}
+            </span>
+          ) : state === 'unpriced-sale' && row.breakEven !== undefined ? (
             <span className="text-muted-foreground text-sm">
               <span className="hidden sm:inline">break-even </span>≥{' '}
               {formatKamas(row.breakEven)}
@@ -113,6 +118,8 @@ export function RecommendationRow({
         <span className="flex flex-wrap items-center justify-end gap-1.5">
           {row.stale && <Badge variant="outline">stale</Badge>}
           {row.thinMargin && <Badge variant="secondary">thin</Badge>}
+          {/* No fill button: a wrong verdict is corrected on the sale price, not the inputs. */}
+          {state === 'dead' && <Badge variant="outline">dead</Badge>}
           {state === 'missing-inputs' && (
             <Button
               variant="outline"

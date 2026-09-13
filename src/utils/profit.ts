@@ -86,6 +86,20 @@ export function calculateCraftProfit({
   }
 }
 
+/** Unpriced ingredients read as free — the most a craft could earn once its gaps are filled. */
+export function optimisticCraftProfit({
+  ingredients,
+  salePrices,
+}: ProfitInputs): CraftProfit {
+  return calculateCraftProfit({
+    ingredients: ingredients.map((ingredient) => ({
+      ...ingredient,
+      unitPrice: ingredient.unitPrice ?? 0,
+    })),
+    salePrices,
+  })
+}
+
 export function getTier(
   profit: CraftProfit,
   tier: PackTier | undefined,

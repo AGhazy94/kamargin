@@ -96,8 +96,8 @@ export function BlockerPanel({
         Price these first
       </h2>
       <p className="mt-1 text-muted-foreground text-xs">
-        The ingredients holding back the most crafts here. One pack-of-1 price
-        each — Enter saves it.
+        The ingredients holding back the most crafts that could still turn a
+        profit. One pack-of-1 price each — Enter saves it.
       </p>
       <ul className="mt-2 flex flex-col divide-y">
         {shown.map((blocker) => (

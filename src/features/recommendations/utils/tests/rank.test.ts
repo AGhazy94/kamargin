@@ -11,6 +11,7 @@ import {
   DEFAULT_FILTERS,
   DEFAULT_SORT,
   rankRecommendations,
+  visibleRows,
 } from '../rank'
 import {
   book,
@@ -110,6 +111,7 @@ describe('rankRecommendations', () => {
       ranked: 1,
       unpricedSale: 1,
       missingInputs: 2,
+      dead: 0,
       profitable: 1,
     })
   })
@@ -188,10 +190,10 @@ describe('rankRecommendations', () => {
     expect(rows.map((row) => row.item.name)).toEqual(['High'])
   })
 
-  it('hides missing-inputs rows when the backlog is toggled off', () => {
+  it('ranks a row the visibility filters will drop, so it can still be counted', () => {
     const rows = rank([RING], {}, { hideIncomplete: true })
 
-    expect(rows).toEqual([])
+    expect(rows.map((row) => row.state)).toEqual(['missing-inputs'])
   })
 
   describe('sorting', () => {
@@ -252,5 +254,106 @@ describe('rankRecommendations', () => {
       // Both rank; only the ring has a sale price, so only it has a craft cost to beat.
       expect(rows.map((row) => row.item.name)).toEqual(['Ring', 'Aaa'])
     })
+  })
+})
+
+describe('the dead state', () => {
+  // Two ingredients, one priced beyond what the craft sells for, one still unknown.
+  const boots = craftable(100, {
+    name: 'Boots',
+    recipe: [
+      [1, 1],
+      [2, 1],
+    ],
+  })
+
+  it('kills a row whose priced inputs alone already exceed the sale price', () => {
+    const rows = rank([boots], book({ 1: { 1: 500 }, 100: { 1: 400 } }))
+
+    expect(rows[0].state).toBe('dead')
+    expect(rows[0].optimisticPerUnit).toBe(400 - 500 - 8)
+  })
+
+  it('spares a row whose best case still clears the fee', () => {
+    const rows = rank([boots], book({ 1: { 1: 300 }, 100: { 1: 400 } }))
+
+    expect(rows[0].state).toBe('missing-inputs')
+    expect(rows[0].optimisticPerUnit).toBeGreaterThan(0)
+  })
+
+  it('never kills a row with no sale price to bound against', () => {
+    const rows = rank([boots], book({ 1: { 1: 500 } }))
+
+    expect(rows[0].state).toBe('missing-inputs')
+    expect(rows[0].optimisticPerUnit).toBeUndefined()
+  })
+
+  it('leaves a fully priced loss ranked and visible', () => {
+    const rows = rank(
+      [boots],
+      book({ 1: { 1: 500 }, 2: { 1: 500 }, 100: { 1: 400 } }),
+    )
+
+    expect(rows[0].state).toBe('ranked')
+    expect(rows[0].margin).toBeLessThan(0)
+  })
+
+  it('sorts the near misses first, and the whole state last', () => {
+    const alive = craftable(200, { name: 'Alive', recipe: [[9, 1]] })
+    const nearMiss = craftable(300, {
+      name: 'Near miss',
+      recipe: [
+        [1, 1],
+        [2, 1],
+      ],
+    })
+
+    const rows = rank(
+      [nearMiss, boots, alive],
+      book({ 1: { 1: 500 }, 100: { 1: 400 }, 300: { 1: 495 } }),
+    )
+
+    expect(rows.map((row) => row.item.name)).toEqual([
+      'Alive',
+      'Near miss',
+      'Boots',
+    ])
+    expect(countByState(rows).dead).toBe(2)
+  })
+})
+
+describe('visibleRows', () => {
+  const boots = craftable(100, {
+    name: 'Boots',
+    recipe: [
+      [1, 1],
+      [2, 1],
+    ],
+  })
+  const rows = () =>
+    rank([boots, RING], book({ 1: { 1: 500 }, 100: { 1: 400 } }))
+
+  it('hides dead rows by default', () => {
+    expect(visibleRows(rows(), filters()).map((row) => row.item.name)).toEqual([
+      'Ring',
+    ])
+  })
+
+  it('shows the dead alone on request, since they sort behind everything', () => {
+    const shown = visibleRows(rows(), filters({ showDead: true }))
+
+    expect(shown.map((row) => row.item.name)).toEqual(['Boots'])
+  })
+
+  it('drops the backlog while the dead are hidden', () => {
+    const backlog = craftable(400, { name: 'Backlog', recipe: [[9, 1]] })
+    const ranked = rank(
+      [boots, RING, backlog],
+      book({ 1: { 1: 500 }, 100: { 1: 400 } }),
+    )
+
+    const shown = visibleRows(ranked, filters({ hideIncomplete: true }))
+
+    expect(shown.map((row) => row.item.name)).toEqual(['Ring'])
   })
 })

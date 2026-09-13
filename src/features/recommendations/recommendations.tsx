@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { ScrollPanel } from '@/components/scroll-panel'
 import { getCraftableItems, getJobName } from '@/lib/game-data'
+import { cn } from '@/lib/utils'
 import { usePriceBook, writeTierPrice } from '@/stores/price-book'
 import type { Item } from '@/types/game'
 import { BlockerPanel } from './components/blocker-panel'
@@ -16,7 +17,33 @@ import {
 } from './stores/filters'
 import type { Recommendation } from './types'
 import { topBlockers } from './utils/blockers'
-import { countByState, matchesFilters, rankRecommendations } from './utils/rank'
+import { countByState, rankRecommendations, visibleRows } from './utils/rank'
+
+/** The one place a hidden row is admitted to: a count you can open, not a silent drop. */
+function DeadToggle({
+  count,
+  showing,
+  onToggle,
+}: {
+  count: number
+  showing: boolean
+  onToggle: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={showing}
+      title="Crafts that lose money even with their missing ingredients free"
+      className={cn(
+        'rounded-md px-1.5 py-0.5 underline decoration-dotted underline-offset-4 outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
+        showing && 'text-foreground',
+      )}
+    >
+      {count} dead · {showing ? 'back' : 'show'}
+    </button>
+  )
+}
 
 function describeFilters(jobId: number | null, min: number, max: number) {
   const job = jobId === null ? 'recipes' : `${getJobName(jobId)} recipes`
@@ -37,14 +64,14 @@ export function Recommendations({
   const { sort, toggle } = useRecommendationSort(serverId)
   const [filling, setFilling] = useState<Recommendation | null>(null)
 
-  const rows = useMemo(
+  const inFilter = useMemo(
     () => rankRecommendations(getCraftableItems(), book, filters, sort),
     [book, filters, sort],
   )
-  const counts = countByState(rows)
-  const inFilter = useMemo(
-    () => getCraftableItems().filter((item) => matchesFilters(item, filters)),
-    [filters],
+  const counts = countByState(inFilter)
+  const rows = useMemo(
+    () => visibleRows(inFilter, filters),
+    [inFilter, filters],
   )
   const { visible, hasMore, sentinelRef } = useVisibleRows(rows)
   const blockers = useMemo(
@@ -68,12 +95,21 @@ export function Recommendations({
     <>
       <ScrollPanel
         className="max-w-app"
-        scrollResetKey={`${filters.jobId}:${filters.minLevel}:${filters.maxLevel}:${filters.hideIncomplete}:${sort.key}:${sort.direction}`}
+        scrollResetKey={`${filters.jobId}:${filters.minLevel}:${filters.maxLevel}:${filters.hideIncomplete}:${filters.showDead}:${sort.key}:${sort.direction}`}
         header={<FilterRow filters={filters} onChange={update} />}
         footer={
-          <p className="text-muted-foreground text-sm tabular-nums">
-            {counts.ranked} ranked · {counts.unpricedSale} unpriced ·{' '}
-            {counts.missingInputs} need prices
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-sm tabular-nums">
+            <span>
+              {counts.ranked} ranked · {counts.unpricedSale} unpriced ·{' '}
+              {counts.missingInputs} need prices
+            </span>
+            {counts.dead > 0 && (
+              <DeadToggle
+                count={counts.dead}
+                showing={filters.showDead}
+                onToggle={() => update({ showDead: !filters.showDead })}
+              />
+            )}
           </p>
         }
       >
@@ -89,9 +125,11 @@ export function Recommendations({
         ) : rows.length === 0 ? (
           <EmptyState
             description={
-              Object.keys(book).length > 0
-                ? 'Nothing ranks yet — every craft here is still missing an ingredient price.'
-                : 'Price a few resources and your crafts will rank here.'
+              counts.dead === inFilter.length
+                ? 'Every craft here loses money even with its missing ingredients free. Check a sale price if that looks wrong.'
+                : Object.keys(book).length > 0
+                  ? 'Nothing ranks yet — every craft here is still missing an ingredient price.'
+                  : 'Price a few resources and your crafts will rank here.'
             }
             blockerPanel={blockerPanel}
             calculatorHref={calculatorHref}

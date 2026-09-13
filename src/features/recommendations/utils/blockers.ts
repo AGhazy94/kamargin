@@ -1,8 +1,7 @@
 import { getItem } from '@/lib/game-data'
 import { getPackPrices, type PriceBook } from '@/stores/price-book'
-import type { Item } from '@/types/game'
 import { cheapestTier } from '@/utils/pack-tiers'
-import type { Blocker } from '../types'
+import type { Blocker, Recommendation } from '../types'
 
 /**
  * Pricing a blocker removes it from the next ranking, which would snatch the row
@@ -32,14 +31,16 @@ export function mergeBlockers(
 
 /** Which unpriced ingredients hold back the most recipes — the answer to a cold price book. */
 export function topBlockers(
-  items: readonly Item[],
+  rows: readonly Recommendation[],
   book: PriceBook,
   limit = 5,
 ): Blocker[] {
   const blocked = new Map<number, number>()
 
-  for (const item of items) {
-    for (const ingredient of item.recipe ?? []) {
+  for (const row of rows) {
+    // Pricing an ingredient of a doomed craft buys nothing: it cannot rank however cheap it turns out.
+    if (row.state === 'dead') continue
+    for (const ingredient of row.item.recipe ?? []) {
       if (cheapestTier(getPackPrices(book[ingredient.itemId]))) continue
       blocked.set(ingredient.itemId, (blocked.get(ingredient.itemId) ?? 0) + 1)
     }

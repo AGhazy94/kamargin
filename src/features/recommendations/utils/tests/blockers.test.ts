@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
+import type { PriceBook } from '@/stores/price-book'
+import type { Item } from '@/types/game'
 import { mergeBlockers, topBlockers } from '../blockers'
-import { book, craftable } from './fixtures'
+import { DEFAULT_FILTERS, DEFAULT_SORT, rankRecommendations } from '../rank'
+import { book, craftable, NOW } from './fixtures'
+
+function rows(items: readonly Item[], prices: PriceBook = {}) {
+  return rankRecommendations(items, prices, DEFAULT_FILTERS, DEFAULT_SORT, NOW)
+}
 
 const ITEMS = [
   craftable(100, {
@@ -21,7 +28,7 @@ const ITEMS = [
 
 describe('topBlockers', () => {
   it('ranks unpriced ingredients by the recipes they hold back', () => {
-    expect(topBlockers(ITEMS, {})).toEqual([
+    expect(topBlockers(rows(ITEMS), {})).toEqual([
       { itemId: 1, name: 'Item 1', recipeCount: 3 },
       { itemId: 2, name: 'Item 2', recipeCount: 1 },
       { itemId: 3, name: 'Item 3', recipeCount: 1 },
@@ -29,13 +36,33 @@ describe('topBlockers', () => {
   })
 
   it('drops an ingredient once it is priced at any tier', () => {
-    const blockers = topBlockers(ITEMS, book({ 1: { 100: 10_000 } }))
+    const prices = book({ 1: { 100: 10_000 } })
+    const blockers = topBlockers(rows(ITEMS, prices), prices)
 
     expect(blockers.map((blocker) => blocker.itemId)).toEqual([2, 3])
   })
 
   it('returns at most the requested number', () => {
-    expect(topBlockers(ITEMS, {}, 1)).toHaveLength(1)
+    expect(topBlockers(rows(ITEMS), {}, 1)).toHaveLength(1)
+  })
+
+  it('ignores an ingredient that only blocks a dead recipe', () => {
+    // Item 2 alone already costs twenty times what Item 100 sells for.
+    const prices = book({ 2: { 1: 1_000 }, 100: { 1: 50 } })
+    const blockers = topBlockers(rows([ITEMS[0]], prices), prices)
+
+    expect(blockers).toEqual([])
+  })
+
+  it('counts only the live recipes an ingredient blocks', () => {
+    // Item 1 blocks all three crafts, but Item 100 is dead however cheap Item 1 turns out.
+    const prices = book({ 2: { 1: 1_000 }, 100: { 1: 50 } })
+    const blockers = topBlockers(rows(ITEMS, prices), prices)
+
+    expect(blockers).toEqual([
+      { itemId: 1, name: 'Item 1', recipeCount: 2 },
+      { itemId: 3, name: 'Item 3', recipeCount: 1 },
+    ])
   })
 })
 
