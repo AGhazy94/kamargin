@@ -13,7 +13,8 @@ Domain knowledge, feature specs and reviews. Not agent instructions — those li
 
 Specs are versioned rather than rewritten: v1 → [v2](features/craft-profit-calculator-v2.md) →
 [v3](features/craft-recommendations-v3.md) → [v4](features/screenshot-import-v4.md) →
-[v5](features/craft-recommendations-v5.md) → [v6](features/price-volatility-v6.md). Each opens by
+[v5](features/craft-recommendations-v5.md) → [v6](features/price-volatility-v6.md) →
+[v7](features/screenshot-watch-v7.md). Each opens by
 saying what the previous one left unanswered, so a superseded spec is still the record of why its
 decisions were made — [v1](features/craft-profit-calculator.md) is superseded *in part*, and both
 `research.md` and v2 link to it. Supersede a spec by updating its Status line, not by deleting it.

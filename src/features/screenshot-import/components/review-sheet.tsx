@@ -26,16 +26,24 @@ import {
   type ImportReceipt,
   undoImport,
 } from '../utils/review-import'
+import { ArrivalsPill } from './arrivals-pill'
 import { ReviewCard } from './review-card'
 
 export function ReviewSheet({
   serverId,
   initialImports,
+  open = true,
+  skipped = 0,
+  onReview,
   onClose,
   onOpenItem,
 }: {
   serverId: number
   initialImports: readonly ImportRequest[]
+  /** False while screenshots arrived on their own: they are read, but nothing is interrupted. */
+  open?: boolean
+  skipped?: number
+  onReview?: () => void
   onClose: () => void
   onOpenItem: (item: Item) => void
 }) {
@@ -117,11 +125,23 @@ export function ReviewSheet({
     setErrors((current) => ({ ...current, [id]: undefined }))
   }
 
+  if (!open)
+    return (
+      <ArrivalsPill
+        total={queue.jobs.length}
+        reading={reading}
+        needsReview={needsReview.length}
+        skipped={skipped}
+        onReview={() => onReview?.()}
+        onDismiss={onClose}
+      />
+    )
+
   return (
     <Dialog
       open
-      onOpenChange={(open) => {
-        if (!open) onClose()
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose()
       }}
     >
       <DialogContent className="flex h-[90dvh] max-w-[calc(100%-1rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-6xl">

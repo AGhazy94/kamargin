@@ -251,3 +251,57 @@ describe('ReviewSheet', () => {
     expect(readPriceBook(355)[greedo.id]).toBeUndefined()
   })
 })
+
+describe('screenshots that arrived on their own', () => {
+  function openDeferred(onReview = vi.fn(), onClose = vi.fn(), skipped = 0) {
+    render(
+      <StrictMode>
+        <TooltipProvider>
+          <ReviewSheet
+            serverId={355}
+            initialImports={initialImports}
+            open={false}
+            skipped={skipped}
+            onReview={onReview}
+            onClose={onClose}
+            onOpenItem={vi.fn()}
+          />
+        </TooltipProvider>
+      </StrictMode>,
+    )
+    return { onReview, onClose }
+  }
+
+  it('stays out of the way, showing a pill instead of the sheet', () => {
+    openDeferred()
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(screen.getByText('1 screenshot read')).toBeTruthy()
+  })
+
+  it('reads while deferred, so the sheet opens onto finished work', async () => {
+    openDeferred()
+    await waitFor(() => expect(queue.enqueue).toHaveBeenCalledTimes(1))
+    expect(screen.getByText('ready to confirm')).toBeTruthy()
+  })
+
+  it('opens the sheet only when asked', () => {
+    const { onReview, onClose } = openDeferred()
+    fireEvent.click(screen.getByRole('button', { name: 'Review prices' }))
+    expect(onReview).toHaveBeenCalledTimes(1)
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('dismissing drops the batch without writing prices', () => {
+    const { onClose } = openDeferred()
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Dismiss without importing' }),
+    )
+    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(readPriceBook(355)[greedo.id]).toBeUndefined()
+  })
+
+  it('says when older files were skipped', () => {
+    openDeferred(vi.fn(), vi.fn(), 290)
+    expect(screen.getByText('290 older files were skipped.')).toBeTruthy()
+  })
+})
